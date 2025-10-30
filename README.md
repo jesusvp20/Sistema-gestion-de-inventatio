@@ -234,8 +234,8 @@ Este proyecto está bajo la Licencia MIT - ver el archivo `LICENSE` para más de
 ## 👨‍💻 Autor
 
 **Tu Nombre**
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- LinkedIn: [Tu Perfil](https://linkedin.com/in/tu-perfil)
+- GitHub: [@jesusvp20](https://github.com/jesusvp20)
+- LinkedIn: [Jesus Vega]([https://linkedin.com/in/tu-perfil](https://www.linkedin.com/in/jesus-david-vega-pernett-b55880170/))
 
 ---
 
@@ -250,7 +250,7 @@ Este proyecto está bajo la Licencia MIT - ver el archivo `LICENSE` para más de
 
 Si tienes preguntas o necesitas ayuda, puedes:
 - Abrir un [Issue](https://github.com/tu-usuario/sistema-gestion-inventario/issues)
-- Contactar por email: tu-email@ejemplo.com
+- Contactar por email: vegapernettj@gmail.com
 
 ---
 
