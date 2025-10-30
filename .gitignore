@@ -1,0 +1,43 @@
+# Archivos sensibles
+.env
+.env.backup
+.env.production
+*.env
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.phpstorm.meta.php
+
+# Logs
+*.log
+
+# Directorios de dependencias (ya están en subdirectorios)
+# pero por si acaso
+node_modules/
+vendor/
+
+# Archivos temporales
+*.tmp
+*.cache
+
+# Archivos de backup
+*.backup
+*.bak
+
+# Archivo SQLite (si alguien lo usa localmente)
+*.sqlite
+*.sqlite3
+database/database.sqlite
+
+# Frontend (ignorar hasta que esté desarrollado)
+inventarioFrontend/
