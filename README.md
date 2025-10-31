@@ -197,10 +197,46 @@ php artisan test
 
 ## 🚀 Despliegue
 
+### Desplegar en Railway
+
+1. **Conectar repositorio:**
+   - Ve a [railway.app](https://railway.app) y crea una cuenta
+   - Crea un nuevo proyecto → "Deploy from GitHub repo"
+   - Selecciona tu repositorio
+
+2. **Configurar base de datos PostgreSQL:**
+   - En Railway, agrega un servicio PostgreSQL
+   - Railway te dará automáticamente las variables de entorno:
+     - `DATABASE_URL` (o `PGHOST`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `PGPORT`)
+
+3. **Configurar variables de entorno:**
+   En Railway, agrega estas variables en tu servicio:
+   ```
+   APP_NAME=Sistema de Gestión de Inventario
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_KEY=(generar con: php artisan key:generate --show)
+   DB_CONNECTION=pgsql
+   DB_HOST=${{Postgres.PGHOST}}
+   DB_DATABASE=${{Postgres.PGDATABASE}}
+   DB_USERNAME=${{Postgres.PGUSER}}
+   DB_PASSWORD=${{Postgres.PGPASSWORD}}
+   DB_PORT=${{Postgres.PGPORT}}
+   ```
+
+4. **Configurar Root Directory (importante):**
+   - En Railway, ve a Settings → Root Directory
+   - Establece: `inventarioBackend`
+   - O deja la raíz y Railway usará los archivos `railway.json` y `start.sh` creados
+
+5. **Desplegar:**
+   - Railway detectará automáticamente PHP y ejecutará el build
+   - El archivo `start.sh` ejecutará las migraciones y servirá la aplicación
+
 ### Opciones de Hosting Gratuito
 
-1. **Render** - [render.com](https://render.com)
-2. **Railway** - [railway.app](https://railway.app)
+1. **Railway** - [railway.app](https://railway.app) ⭐ Recomendado
+2. **Render** - [render.com](https://render.com)
 3. **Fly.io** - [fly.io](https://fly.io)
 
 ### Configuración para Producción
