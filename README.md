@@ -193,35 +193,6 @@ php artisan test
   - `inventarioBackend/INSTRUCCIONES-SWAGGER.md` - Guía de Swagger
   - `inventarioBackend/RESUMEN-CORRECCIONES.md` - Correcciones realizadas
 
----
-
-## 🚀 Despliegue
-
-### Opciones de Hosting Gratuito
-
-1. **Render** - [render.com](https://render.com)
-2. **Railway** - [railway.app](https://railway.app)
-3. **Fly.io** - [fly.io](https://fly.io)
-
-### Configuración para Producción
-
-1. Cambia `APP_ENV=production` y `APP_DEBUG=false` en `.env`
-2. Ejecuta `php artisan config:cache`
-3. Ejecuta `php artisan route:cache`
-4. Configura la conexión a PostgreSQL en producción
-5. Actualiza `APP_URL` con la URL de producción
-
----
-
-## 🤝 Contribuir
-
-Las contribuciones son bienvenidas. Para cambios importantes:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
 
 ---
 
@@ -233,7 +204,6 @@ Este proyecto está bajo la Licencia MIT - ver el archivo `LICENSE` para más de
 
 ## 👨‍💻 Autor
 
-**Tu Nombre**
 - GitHub: [@jesusvp20](https://github.com/jesusvp20)
 - LinkedIn: [Jesus Vega]([https://linkedin.com/in/tu-perfil](https://www.linkedin.com/in/jesus-david-vega-pernett-b55880170/))
 
