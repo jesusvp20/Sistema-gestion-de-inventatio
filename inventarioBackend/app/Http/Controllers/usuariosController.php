@@ -274,7 +274,8 @@ class usuariosController extends Controller
     public function logout(Request $request)
     {
         try {
-            $usuario = $request->user();
+            // Obtener el usuario autenticado desde Sanctum
+            $usuario = auth('sanctum')->user();
 
             if (!$usuario) {
                 return response()->json([
@@ -284,8 +285,8 @@ class usuariosController extends Controller
                 ], 401);
             }
 
-            // Revocar todos los tokens del usuario
-            $usuario->tokens()->delete();
+            // Revocar solo el token actual (más seguro)
+            $request->user()->currentAccessToken()->delete();
 
             return response()->json([
                 'status' => 'success',
@@ -293,11 +294,13 @@ class usuariosController extends Controller
                 'statusCode' => 200
             ], 200);
         } catch (\Exception $e) {
-            \Log::error('Error en logout: ' . $e->getMessage());
+            \Log::error('Error en logout: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al cerrar sesión. Por favor, intente nuevamente.',
+                'message' => 'Error al cerrar sesión: ' . $e->getMessage(),
                 'statusCode' => 500
             ], 500);
         }
