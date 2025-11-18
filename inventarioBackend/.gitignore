@@ -23,5 +23,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Documentación de seguridad (no subir a GitHub)
+# Documentación de seguridad y datos de prueba (no subir a GitHub)
 ANALISIS-SEGURIDAD-AUTENTICACION.md
+DATOS-PRUEBA-API.md
