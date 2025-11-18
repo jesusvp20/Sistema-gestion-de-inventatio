@@ -11,6 +11,10 @@ return [
     | reset "broker" for your application. You may change these values
     | as required, but they're a perfect start for most applications.
     |
+    | MODIFICADO: 2025-11-18 21:00:00
+    | Cambio: Se configuró 'sanctum' como guard por defecto para API
+    | Razón: Soportar autenticación basada en tokens para la API REST
+    |
     */
 
     'defaults' => [
@@ -31,7 +35,11 @@ return [
     | users are actually retrieved out of your database or other storage
     | system used by the application. Typically, Eloquent is utilized.
     |
-    | Supported: "session"
+    | Supported: "session", "token"
+    |
+    | MODIFICADO: 2025-11-18 21:00:00
+    | Agregado: Guard 'sanctum' para autenticación API con tokens
+    | Razón: Permitir autenticación stateless para endpoints API
     |
     */
 
@@ -39,6 +47,11 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'usuarios',
         ],
     ],
 
@@ -57,12 +70,21 @@ return [
     |
     | Supported: "database", "eloquent"
     |
+    | MODIFICADO: 2025-11-18 21:00:00
+    | Agregado: Provider 'usuarios' para tabla usuarios personalizada
+    | Razón: El sistema usa tabla 'usuarios' en lugar de 'users'
+    |
     */
 
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        'usuarios' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\UsuariosModel::class,
         ],
 
         // 'users' => [
