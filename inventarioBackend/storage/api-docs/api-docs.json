@@ -1,0 +1,706 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Sistema de Gestión de Inventario API",
+        "description": "Sistema para gestionar inventario para empresas en crecimiento",
+        "contact": {
+            "name": "API Support",
+            "email": "support@inventario.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Servidor Local"
+        },
+        {
+            "url": "https://sistema-gestion-de-inventatio.onrender.com/api",
+            "description": "Servidor Producción (Render)"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Autenticación",
+                    "Usuarios"
+                ],
+                "summary": "Registrar usuario",
+                "description": "Crea un nuevo usuario en el sistema. No requiere autenticación.",
+                "operationId": "9215e52283cc1c836291610a4ad4696a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario registrado exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos no válidos"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Iniciar sesión",
+                "description": "Autentica un usuario y devuelve un token Bearer para usar en endpoints protegidos. No requiere autenticación previa.",
+                "operationId": "ce4aa149248705ca5e58611770a40b3f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login exitoso, token generado"
+                    },
+                    "400": {
+                        "description": "Datos no válidos"
+                    },
+                    "401": {
+                        "description": "Credenciales incorrectas"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "Autenticación",
+                    "Usuarios"
+                ],
+                "summary": "Usuario autenticado actual",
+                "description": "Obtiene la información del usuario actualmente autenticado. Requiere token Bearer.",
+                "operationId": "87d3834984a8af54bbe43604f620118e",
+                "responses": {
+                    "200": {
+                        "description": "Usuario autenticado obtenido exitosamente"
+                    },
+                    "401": {
+                        "description": "No autenticado o token inválido"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Revoca todos los tokens de acceso del usuario autenticado. Requiere token Bearer.",
+                "operationId": "837f78eed3ff70fcec54ecdf9882bc41",
+                "responses": {
+                    "200": {
+                        "description": "Sesión cerrada exitosamente"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/usuarios": {
+            "get": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Listar usuarios",
+                "description": "Obtiene la lista de todos los usuarios del sistema. Requiere autenticación.",
+                "operationId": "b403164d1659ec1a94a9bc9c0e2f73b0",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios obtenida exitosamente"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontraron usuarios"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Crear usuario",
+                "description": "Crea un nuevo usuario en el sistema. Requiere autenticación.",
+                "operationId": "1aa39407c083873f80525f9d740a0f43",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@ejemplo.com"
+                                    },
+                                    "contraseña": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "tipo": {
+                                        "type": "string",
+                                        "example": "usuario"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario creado exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos no válidos"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/usuarios/{id}": {
+            "get": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Mostrar usuario",
+                "description": "Obtiene la información de un usuario específico. Requiere autenticación.",
+                "operationId": "ef01915ffc1e463bb9fb8e1226cc8752",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuario encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Actualizar usuario",
+                "description": "Actualiza la información de un usuario existente. Requiere autenticación.",
+                "operationId": "40400827b1941f11defe45d1ba05b83b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@ejemplo.com"
+                                    },
+                                    "tipo": {
+                                        "type": "string",
+                                        "example": "usuario"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario actualizado exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos no válidos"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Eliminar usuario",
+                "description": "Elimina un usuario del sistema. Requiere autenticación.",
+                "operationId": "1ce7e87f8e2ec8dd8bf503eff350a8ad",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuario eliminado exitosamente"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Usuario": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "correo": {
+                        "type": "string",
+                        "example": "juan@ejemplo.com"
+                    },
+                    "tipo": {
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "usuario",
+                            "vendedor"
+                        ],
+                        "example": "admin"
+                    },
+                    "creado_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "actualizado_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Producto": {
+                "properties": {
+                    "IdProducto": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Producto Ejemplo"
+                    },
+                    "descripcion": {
+                        "type": "string",
+                        "example": "Descripción del producto",
+                        "nullable": true
+                    },
+                    "precio": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 99.99
+                    },
+                    "cantidad_disponible": {
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "categoria": {
+                        "type": "string",
+                        "example": "Electrónica",
+                        "nullable": true
+                    },
+                    "proveedor": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "codigoProducto": {
+                        "type": "string",
+                        "example": "PROD-001",
+                        "nullable": true
+                    },
+                    "estado": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "Cliente": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "María García"
+                    },
+                    "identificacion": {
+                        "type": "string",
+                        "example": "123456789"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "maria@ejemplo.com"
+                    },
+                    "telefono": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "estado": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "required": [
+                    "correo",
+                    "password"
+                ],
+                "properties": {
+                    "correo": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "admin@sistema.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "Admin2024!"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterRequest": {
+                "required": [
+                    "correo",
+                    "nombre",
+                    "contraseña",
+                    "tipo"
+                ],
+                "properties": {
+                    "correo": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "juan@ejemplo.com"
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "contraseña": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password123"
+                    },
+                    "tipo": {
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "usuario",
+                            "vendedor"
+                        ],
+                        "example": "usuario"
+                    }
+                },
+                "type": "object"
+            },
+            "Proveedor": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "example": "Proveedor ABC"
+                    },
+                    "direccion": {
+                        "type": "string",
+                        "example": "Calle 123 #45-67"
+                    },
+                    "telefono": {
+                        "type": "string",
+                        "example": "3001234567"
+                    },
+                    "estado": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "Venta": {
+                "properties": {
+                    "id_ventas": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "fecha_venta": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15 10:30:00"
+                    },
+                    "total": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150.5
+                    },
+                    "id_cliente": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cliente": {
+                        "$ref": "#/components/schemas/Cliente"
+                    },
+                    "detalles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DetalleVenta"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "DetalleVenta": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_venta": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_producto": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cantidad": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "precio": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50
+                    },
+                    "producto": {
+                        "$ref": "#/components/schemas/Producto"
+                    }
+                },
+                "type": "object"
+            },
+            "Factura": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "numero_facturas": {
+                        "type": "string",
+                        "example": "F-000001"
+                    },
+                    "fecha": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15 10:30:00"
+                    },
+                    "total": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150.5
+                    },
+                    "cliente_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "estado": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "cliente": {
+                        "$ref": "#/components/schemas/Cliente"
+                    },
+                    "detalles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DetalleFactura"
+                        }
+                    },
+                    "pdf_path": {
+                        "type": "string",
+                        "example": "storage/facturas/factura_001.pdf",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "DetalleFactura": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "factura_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "producto_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cantidad": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "precio_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50
+                    },
+                    "subtotal": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 150
+                    },
+                    "producto": {
+                        "$ref": "#/components/schemas/Producto"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter your bearer token",
+                "name": "bearerAuth",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Usuarios",
+            "description": "Gestión de usuarios del sistema"
+        },
+        {
+            "name": "Autenticación",
+            "description": "Autenticación y registro de usuarios"
+        }
+    ]
+}

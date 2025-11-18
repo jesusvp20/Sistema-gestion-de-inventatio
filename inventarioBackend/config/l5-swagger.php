@@ -44,7 +44,21 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app'),
+                    base_path('app/Http/Controllers/UsuariosDocs.php'),
+                    base_path('app/Http/Controllers/Controller.php'),
+                    base_path('app/Http/Controllers/DocumentationSchemas.php'),
+                ],
+                
+                /*
+                 * Exclude controllers with broken annotations
+                 */
+                'excludes' => [
+                    base_path('app/Http/Controllers/VentasController.php'),
+                    base_path('app/Http/Controllers/proveedoresController.php'),
+                    base_path('app/Http/Controllers/productosController.php'),
+                    base_path('app/Http/Controllers/ClientesController.php'),
+                    base_path('app/Http/Controllers/DetalleFacturaController.php'),
+                    base_path('app/Http/Controllers/DetalleVentasController.php'),
                 ],
             ],
         ],
