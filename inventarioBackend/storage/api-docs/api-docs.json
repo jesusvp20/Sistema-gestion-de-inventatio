@@ -11,12 +11,12 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000/api",
-            "description": "Servidor Local"
-        },
-        {
             "url": "https://sistema-gestion-de-inventatio.onrender.com/api",
             "description": "Servidor Producción (Render)"
+        },
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Servidor Local"
         }
     ],
     "paths": {

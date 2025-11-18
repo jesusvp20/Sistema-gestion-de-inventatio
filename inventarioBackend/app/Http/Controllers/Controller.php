@@ -14,12 +14,12 @@ use OpenApi\Attributes as OA;
     )
 )]
 #[OA\Server(
-    url: "http://localhost:8000/api",
-    description: "Servidor Local"
-)]
-#[OA\Server(
     url: "https://sistema-gestion-de-inventatio.onrender.com/api",
     description: "Servidor Producción (Render)"
+)]
+#[OA\Server(
+    url: "http://localhost:8000/api",
+    description: "Servidor Local"
 )]
 #[OA\SecurityScheme(
     securityScheme: "bearerAuth",
