@@ -89,8 +89,8 @@ class usuariosController extends Controller
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "nombre", type: "string", example: "Juan_perez"),
-                    new OA\Property(property: "password", type: "string", example: "password123")
+                    new OA\Property(property: "correo", type: "string", format: "email", example: "admin@sistema.com"),
+                    new OA\Property(property: "password", type: "string", example: "Admin2024!")
                 ]
             )
         )
@@ -122,10 +122,11 @@ class usuariosController extends Controller
         try {
             // Validación de entrada
             $validator = Validator::make($request->all(), [
-                'nombre' => 'required|string|max:255',
+                'correo' => 'required|string|email|max:255',
                 'password' => 'required|string|min:6'
             ], [
-                'nombre.required' => 'El nombre de usuario es requerido',
+                'correo.required' => 'El correo es requerido',
+                'correo.email' => 'El correo debe ser una dirección válida',
                 'password.required' => 'La contraseña es requerida',
                 'password.min' => 'La contraseña debe tener al menos 6 caracteres'
             ]);
@@ -139,8 +140,8 @@ class usuariosController extends Controller
                 ], 400);
             }
 
-            // Buscar usuario por nombre
-            $usuario = UsuariosModel::where('nombre', $request->nombre)->first();
+            // Buscar usuario por correo
+            $usuario = UsuariosModel::where('correo', $request->correo)->first();
 
             // Verificar credenciales
             if (!$usuario || !Hash::check($request->password, $usuario->contraseña)) {

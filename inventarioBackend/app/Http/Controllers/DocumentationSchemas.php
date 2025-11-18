@@ -46,10 +46,10 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: "LoginRequest",
     type: "object",
-    required: ["nombre", "password"],
+    required: ["correo", "password"],
     properties: [
-        new OA\Property(property: "nombre", type: "string", example: "juan_perez"),
-        new OA\Property(property: "password", type: "string", format: "password", example: "password123")
+        new OA\Property(property: "correo", type: "string", format: "email", example: "admin@sistema.com"),
+        new OA\Property(property: "password", type: "string", format: "password", example: "Admin2024!")
     ]
 )]
 #[OA\Schema(
