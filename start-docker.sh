@@ -7,18 +7,18 @@ cd /var/www/html
 if [ ! -f .env ]; then
     echo "Creando archivo .env desde variables de entorno..."
     cat > .env <<EOF
-APP_NAME=${APP_NAME:-Laravel}
-APP_ENV=${APP_ENV:-production}
+APP_NAME="${APP_NAME:-Laravel}"
+APP_ENV="${APP_ENV:-production}"
 APP_KEY=
-APP_DEBUG=${APP_DEBUG:-false}
-APP_URL=${APP_URL:-http://localhost}
+APP_DEBUG="${APP_DEBUG:-false}"
+APP_URL="${APP_URL:-http://localhost}"
 
 LOG_CHANNEL=stack
 LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=debug
 
-DB_CONNECTION=${DB_CONNECTION:-pgsql}
-DATABASE_URL=${DATABASE_URL}
+DB_CONNECTION="${DB_CONNECTION:-pgsql}"
+DATABASE_URL="${DATABASE_URL}"
 
 BROADCAST_DRIVER=log
 CACHE_DRIVER=file
@@ -40,7 +40,7 @@ MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
 MAIL_FROM_ADDRESS="hello@example.com"
-MAIL_FROM_NAME="${APP_NAME}"
+MAIL_FROM_NAME="${APP_NAME:-Laravel}"
 
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
@@ -48,7 +48,7 @@ AWS_DEFAULT_REGION=us-east-1
 AWS_BUCKET=
 AWS_USE_PATH_STYLE_ENDPOINT=false
 
-VITE_APP_NAME="${APP_NAME}"
+VITE_APP_NAME="${APP_NAME:-Laravel}"
 EOF
 fi
 
