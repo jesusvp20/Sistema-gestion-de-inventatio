@@ -15,30 +15,6 @@ class VentasController extends Controller
     /**
      * Lista todas las ventas con su cliente y detalles de productos.
      */
-    #[OA\Get(
-        path: "/ventas",
-        tags: ["Ventas"],
-        summary: "Listar ventas",
-        description: "Obtiene una lista de ventas con filtros por fecha y paginación",
-        parameters: [
-            new OA\Parameter(name: "fecha_inicio", in: "query", required: false, description: "Fecha de inicio (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
-            new OA\Parameter(name: "fecha_fin", in: "query", required: false, description: "Fecha de fin (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
-            new OA\Parameter(name: "por_pagina", in: "query", required: false, description: "Número de registros por página", schema: new OA\Schema(type: "integer", default: 15))
-        ]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Lista de ventas obtenida exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Venta")
-            ]
-        )
-    )]
-    #[OA\Response(response: 400, description: "Filtros inválidos")]
-    #[OA\Response(response: 404, description: "No hay ventas")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
     public function index(Request $request){
         try{
             $validator = Validator::make($request->all(), [
@@ -91,44 +67,6 @@ class VentasController extends Controller
     /**
      * Crea una nueva venta y sus detalles.
      */
-    #[OA\Post(
-        path: "/ventas",
-        tags: ["Ventas"],
-        summary: "Crear nueva venta",
-        description: "Crea una nueva venta con sus detalles. Actualiza automáticamente el stock de productos",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ["id_cliente", "detalles"],
-                properties: [
-                    new OA\Property(property: "id_cliente", type: "integer", example: 1),
-                    new OA\Property(
-                        property: "detalles",
-                        type: "array",
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: "id_producto", type: "integer", example: 1),
-                                new OA\Property(property: "cantidad", type: "integer", example: 3)
-                            ]
-                        )
-                    )
-                ]
-            )
-        )
-    )]
-    #[OA\Response(
-        response: 201,
-        description: "Venta creada exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "message", type: "string", example: "Venta creada exitosamente"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Venta")
-            ]
-        )
-    )]
-    #[OA\Response(response: 400, description: "Datos inválidos o stock insuficiente")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -195,47 +133,6 @@ class VentasController extends Controller
      * Actualiza una venta existente.
      * Esto implica revertir el stock de la venta original y procesar la nueva.
      */
-    #[OA\Put(
-        path: "/ventas/{id}",
-        tags: ["Ventas"],
-        summary: "Actualizar venta",
-        description: "Actualiza una venta existente. Revierte el stock de los productos originales y actualiza con los nuevos detalles",
-        parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, description: "ID de la venta", schema: new OA\Schema(type: "integer"))
-        ],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: "id_cliente", type: "integer", example: 1),
-                    new OA\Property(
-                        property: "detalles",
-                        type: "array",
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: "id_producto", type: "integer", example: 1),
-                                new OA\Property(property: "cantidad", type: "integer", example: 3)
-                            ]
-                        )
-                    )
-                ]
-            )
-        )
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Venta actualizada exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "message", type: "string", example: "Venta actualizada exitosamente"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Venta")
-            ]
-        )
-    )]
-    #[OA\Response(response: 400, description: "Datos inválidos")]
-    #[OA\Response(response: 404, description: "Venta no encontrada")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -318,27 +215,6 @@ class VentasController extends Controller
     /**
      * Elimina una venta y restaura el stock de los productos.
      */
-    #[OA\Delete(
-        path: "/ventas/{id}",
-        tags: ["Ventas"],
-        summary: "Eliminar venta",
-        description: "Elimina una venta y restaura automáticamente el stock de los productos",
-        parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, description: "ID de la venta", schema: new OA\Schema(type: "integer"))
-        ]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Venta eliminada exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "message", type: "string", example: "Venta eliminada exitosamente")
-            ]
-        )
-    )]
-    #[OA\Response(response: 404, description: "Venta no encontrada")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
     public function destroy($id)
     {
         try {
@@ -376,30 +252,6 @@ class VentasController extends Controller
     /**
      * Muestra el historial de ventas con detalles.
      */
-    #[OA\Get(
-        path: "/ventas/historial",
-        tags: ["Ventas"],
-        summary: "Historial de ventas",
-        description: "Obtiene el historial de ventas con filtros por fecha y paginación",
-        parameters: [
-            new OA\Parameter(name: "fecha_inicio", in: "query", required: false, description: "Fecha de inicio (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
-            new OA\Parameter(name: "fecha_fin", in: "query", required: false, description: "Fecha de fin (YYYY-MM-DD)", schema: new OA\Schema(type: "string", format: "date")),
-            new OA\Parameter(name: "por_pagina", in: "query", required: false, description: "Número de registros por página", schema: new OA\Schema(type: "integer", default: 15))
-        ]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Historial de ventas obtenido exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Venta")
-            ]
-        )
-    )]
-    #[OA\Response(response: 400, description: "Filtros inválidos")]
-    #[OA\Response(response: 404, description: "No hay ventas")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
     public function historial(Request $request)
     {
         try {
@@ -452,3 +304,4 @@ class VentasController extends Controller
     }
 
 }
+
