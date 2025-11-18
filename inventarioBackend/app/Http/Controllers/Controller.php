@@ -18,8 +18,8 @@ use OpenApi\Attributes as OA;
     description: "Servidor Local"
 )]
 #[OA\Server(
-    url: "https://sistema-gestion-de-inventatio.zeabur.app/api",
-    description: "Servidor Producción (Zeabur)"
+    url: "https://sistema-gestion-de-inventatio.onrender.com/api",
+    description: "Servidor Producción (Render)"
 )]
 #[OA\SecurityScheme(
     securityScheme: "bearerAuth",
