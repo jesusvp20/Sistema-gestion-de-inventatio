@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: inventario-api
+    env: php
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: cd inventarioBackend && php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_NAME
+        value: Sistema de Gestión de Inventario
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        sync: false  # Se configurará manualmente en Render con la URL de la BD
+      - key: APP_KEY
+        sync: false  # Se generará automáticamente en el build
+

@@ -233,10 +233,55 @@ php artisan test
    - Railway detectará automáticamente PHP y ejecutará el build
    - El archivo `start.sh` ejecutará las migraciones y servirá la aplicación
 
+### Desplegar en Render (con Docker)
+
+1. **Crear base de datos PostgreSQL:**
+   - Ve a [render.com](https://render.com) y crea una cuenta
+   - Crea un nuevo servicio → "PostgreSQL"
+   - Copia la **URL de la base de datos interna** (Internal Database URL)
+   - Ejemplo: `postgresql://usuario:password@host/database`
+
+2. **Crear servicio Web:**
+   - Crea un nuevo servicio → "Web Service"
+   - Conecta tu repositorio de GitHub
+   - Selecciona el repositorio y la rama
+
+3. **Configurar el servicio:**
+   - **Environment:** `Docker` (selecciona Docker de la lista)
+   - **Build Command:** (dejar vacío - Render usará el Dockerfile automáticamente)
+   - **Start Command:** (dejar vacío - el Dockerfile ya tiene el comando configurado)
+   - **Root Directory:** (dejar vacío, la raíz del repositorio)
+
+4. **Configurar variables de entorno:**
+   En la sección "Environment Variables" de Render, agrega:
+   ```
+   APP_NAME=Sistema de Gestión de Inventario
+   APP_ENV=production
+   APP_DEBUG=false
+   DB_CONNECTION=pgsql
+   DATABASE_URL=postgresql://inventariodb_m4cg_user:IPioEijXgdmr4ryLA4V2rN6IMevjG7cl@dpg-d4eb873e5dus73fd4qf0-a/inventariodb_m4cg
+   ```
+   
+   **Nota:** 
+   - Usa la **URL interna** de tu base de datos PostgreSQL
+   - `APP_KEY` se generará automáticamente durante el build, no es necesario configurarlo manualmente
+   - `PORT` se configura automáticamente por Render, no necesitas agregarla
+
+5. **Desplegar:**
+   - Render detectará automáticamente el `Dockerfile` y construirá la imagen
+   - El script `start-docker.sh` ejecutará migraciones y optimizará la aplicación
+   - Tu API estará disponible en la URL proporcionada por Render
+
+**Archivos importantes para Render con Docker:**
+- `Dockerfile` - Configuración de la imagen Docker con PHP 8.2
+- `start-docker.sh` - Script que ejecuta migraciones y inicia el servidor
+- `.dockerignore` - Archivos excluidos del build de Docker
+- `inventarioBackend/app/Providers/AppServiceProvider.php` - Configurado para forzar HTTPS en producción
+
 ### Opciones de Hosting Gratuito
 
 1. **Railway** - [railway.app](https://railway.app) ⭐ Recomendado
-2. **Render** - [render.com](https://render.com)
+2. **Render** - [render.com](https://render.com) ⭐ Con Docker
 3. **Fly.io** - [fly.io](https://fly.io)
 
 ### Configuración para Producción

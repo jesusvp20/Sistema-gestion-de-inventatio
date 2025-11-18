@@ -14,8 +14,12 @@ use OpenApi\Attributes as OA;
     )
 )]
 #[OA\Server(
-    url: "/api",
-    description: "API Base URL"
+    url: "http://localhost:8000/api",
+    description: "Servidor Local"
+)]
+#[OA\Server(
+    url: "https://sistema-gestion-de-inventatio.zeabur.app/api",
+    description: "Servidor Producción (Zeabur)"
 )]
 #[OA\SecurityScheme(
     securityScheme: "bearerAuth",

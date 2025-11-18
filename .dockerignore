@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# Frontend (no necesario para el backend)
+inventarioFrontend/
+node_modules/
+
+# Backend - archivos que no necesitamos en Docker
+inventarioBackend/.env
+inventarioBackend/.env.*
+inventarioBackend/vendor/
+inventarioBackend/node_modules/
+inventarioBackend/storage/logs/*
+inventarioBackend/storage/framework/cache/*
+inventarioBackend/storage/framework/sessions/*
+inventarioBackend/storage/framework/views/*
+inventarioBackend/bootstrap/cache/*
+inventarioBackend/.phpunit.result.cache
+inventarioBackend/.phpunit.cache
+
+# Archivos de configuración local
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.phpactor.json
+
+# Archivos de build y deployment
+build.sh
+start.sh
+railway.json
+nixpacks.toml
+Procfile
+render.yaml
+
+# Tests
+inventarioBackend/tests/
+inventarioBackend/phpunit.xml
+
+# Database local
+inventarioBackend/database/database.sqlite
+
