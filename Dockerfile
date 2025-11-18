@@ -22,13 +22,15 @@ WORKDIR /var/www/html
 
 # Copiar archivos de composer primero para cachear dependencias
 COPY inventarioBackend/composer.json inventarioBackend/composer.lock ./
-RUN composer install --optimize-autoloader --no-dev --no-interaction --no-scripts
+
+# Instalar dependencias incluyendo dev (necesario para l5-swagger)
+RUN composer install --optimize-autoloader --no-interaction --no-scripts
 
 # Copiar el resto de los archivos del proyecto
 COPY inventarioBackend/ /var/www/html/
 
-# Ejecutar scripts de composer
-RUN composer dump-autoload --optimize
+# Regenerar autoload sin ejecutar scripts (los scripts se ejecutarán en runtime)
+RUN composer dump-autoload --optimize --no-scripts
 
 # Configurar permisos
 RUN chown -R www-data:www-data /var/www/html \

@@ -3,6 +3,9 @@ set -e
 
 cd /var/www/html
 
+# Ejecutar package discovery (necesario para l5-swagger)
+composer dump-autoload --optimize || true
+
 # Generar clave de aplicación si no existe
 php artisan key:generate --force
 
@@ -10,7 +13,7 @@ php artisan key:generate --force
 php artisan migrate --force
 
 # Generar documentación Swagger
-php artisan l5-swagger:generate
+php artisan l5-swagger:generate || echo "Warning: No se pudo generar Swagger, continuando..."
 
 # Cachear configuraciones
 php artisan config:cache
