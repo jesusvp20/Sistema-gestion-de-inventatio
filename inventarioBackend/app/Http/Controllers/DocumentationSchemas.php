@@ -28,7 +28,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
         new OA\Property(property: "proveedor", type: "integer", nullable: true),
         new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
-        new OA\Property(property: "estado", type: "boolean", example: true)
+        new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
     ]
 )]
 #[OA\Schema(

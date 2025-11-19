@@ -74,7 +74,7 @@ class productosController extends Controller
                     new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
                     new OA\Property(property: "proveedor", type: "integer", nullable: true),
                     new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
-                    new OA\Property(property: "estado", type: "boolean", example: true)
+                    new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
                 ]
             )
         )
@@ -104,7 +104,7 @@ class productosController extends Controller
                 'categoria' => 'nullable|string|max:255',
                 'proveedor' => 'nullable|integer',
                 'codigoProducto' => 'nullable|string|max:255|unique:producto,codigoProducto',
-                'estado' => 'required|boolean'
+                'estado' => 'required|string|in:disponible,agotado,expirado'
             ], [
                 'nombre.required' => 'El nombre del producto es obligatorio',
                 'nombre.string' => 'El nombre debe ser texto',
@@ -122,7 +122,8 @@ class productosController extends Controller
                 'codigoProducto.max' => 'El código no puede exceder 255 caracteres',
                 'codigoProducto.unique' => 'Este código de producto ya existe',
                 'estado.required' => 'El estado es obligatorio',
-                'estado.boolean' => 'El estado debe ser verdadero o falso'
+                'estado.string' => 'El estado debe ser un texto',
+                'estado.in' => 'El estado debe ser: disponible, agotado o expirado'
             ]);
 
             if ($validator->fails()) {
@@ -214,7 +215,7 @@ class productosController extends Controller
                     new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
                     new OA\Property(property: "proveedor", type: "integer", nullable: true),
                     new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
-                    new OA\Property(property: "estado", type: "boolean", example: true)
+                    new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
                 ]
             )
         )
@@ -251,7 +252,7 @@ class productosController extends Controller
                 'cantidad_disponible' => 'sometimes|integer|min:0',
                 'categoria' => 'nullable|string|max:255',
                 'codigoProducto' => 'nullable|string|max:255|unique:producto,codigoProducto,' . $id . ',IdProducto',
-                'estado' => 'sometimes|boolean'
+                'estado' => 'sometimes|string|in:disponible,agotado,expirado'
             ], [
                 'nombre.max' => 'El nombre no puede exceder 255 caracteres',
                 'precio.numeric' => 'El precio debe ser un número válido',
@@ -259,7 +260,8 @@ class productosController extends Controller
                 'cantidad_disponible.integer' => 'La cantidad debe ser un número entero',
                 'cantidad_disponible.min' => 'La cantidad no puede ser negativa',
                 'codigoProducto.unique' => 'Este código de producto ya existe',
-                'estado.boolean' => 'El estado debe ser verdadero o falso'
+                'estado.string' => 'El estado debe ser un texto',
+                'estado.in' => 'El estado debe ser: disponible, agotado o expirado'
             ]);
             
             if ($validator->fails()) {
@@ -362,7 +364,15 @@ class productosController extends Controller
         if (!$producto) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
         }
-        $producto->estado = !$producto->estado;
+        // Alternar entre disponible y agotado
+        if ($producto->estado === 'disponible') {
+            $producto->estado = 'agotado';
+        } elseif ($producto->estado === 'agotado') {
+            $producto->estado = 'disponible';
+        } else {
+            // Si está expirado, cambiar a disponible
+            $producto->estado = 'disponible';
+        }
         $producto->save();
         return response()->json(['status' => 'success', 'data' => $producto]);
     }
@@ -409,7 +419,7 @@ class productosController extends Controller
     )]
     public function activos()
     {
-        $productos = productosModel::where('estado', true)->get();
+        $productos = productosModel::where('estado', 'disponible')->get();
         return response()->json(['status' => 'success', 'data' => $productos]);
     }
 

@@ -40,7 +40,6 @@ class ProductosModel extends Model
         'fecha_actualizacion' => 'datetime',
         'precio' => 'decimal:2',
         'cantidad_disponible' => 'integer',
-        'estado' => 'boolean',
     ];
 
     // Relaciones
