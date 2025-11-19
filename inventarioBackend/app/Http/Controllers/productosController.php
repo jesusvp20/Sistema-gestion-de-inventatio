@@ -107,13 +107,19 @@ class productosController extends Controller
                 'estado' => 'required|boolean'
             ], [
                 'nombre.required' => 'El nombre del producto es obligatorio',
+                'nombre.string' => 'El nombre debe ser texto',
                 'nombre.max' => 'El nombre no puede exceder 255 caracteres',
                 'precio.required' => 'El precio es obligatorio',
                 'precio.numeric' => 'El precio debe ser un número válido',
                 'precio.min' => 'El precio no puede ser negativo',
-                'cantidad_disponible.required' => 'La cantidad es obligatoria',
+                'cantidad_disponible.required' => 'La cantidad disponible es obligatoria',
                 'cantidad_disponible.integer' => 'La cantidad debe ser un número entero',
                 'cantidad_disponible.min' => 'La cantidad no puede ser negativa',
+                'categoria.string' => 'La categoría debe ser texto',
+                'categoria.max' => 'La categoría no puede exceder 255 caracteres',
+                'proveedor.integer' => 'El proveedor debe ser un número válido',
+                'codigoProducto.string' => 'El código debe ser texto',
+                'codigoProducto.max' => 'El código no puede exceder 255 caracteres',
                 'codigoProducto.unique' => 'Este código de producto ya existe',
                 'estado.required' => 'El estado es obligatorio',
                 'estado.boolean' => 'El estado debe ser verdadero o falso'
