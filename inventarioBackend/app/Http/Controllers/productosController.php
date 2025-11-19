@@ -67,13 +67,13 @@ class productosController extends Controller
             content: new OA\JsonContent(
                 required: ["nombre", "precio", "cantidad_disponible", "estado"],
                 properties: [
-                    new OA\Property(property: "nombre", type: "string", example: "Producto Ejemplo"),
-                    new OA\Property(property: "descripcion", type: "string", example: "Descripción del producto", nullable: true),
-                    new OA\Property(property: "precio", type: "number", format: "float", example: 99.99),
-                    new OA\Property(property: "cantidad_disponible", type: "integer", example: 50),
+                    new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
+                    new OA\Property(property: "nombre", type: "string", example: "Laptop Dell"),
+                    new OA\Property(property: "descripcion", type: "string", example: "Laptop 15 pulgadas", nullable: true),
+                    new OA\Property(property: "precio", type: "number", format: "float", example: 12999.99),
+                    new OA\Property(property: "cantidad_disponible", type: "integer", example: 25),
                     new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
                     new OA\Property(property: "proveedor", type: "integer", nullable: true),
-                    new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
                     new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
                 ]
             )
@@ -208,13 +208,13 @@ class productosController extends Controller
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "nombre", type: "string", example: "Producto Ejemplo"),
-                    new OA\Property(property: "descripcion", type: "string", example: "Descripción del producto", nullable: true),
-                    new OA\Property(property: "precio", type: "number", format: "float", example: 99.99),
-                    new OA\Property(property: "cantidad_disponible", type: "integer", example: 50),
+                    new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
+                    new OA\Property(property: "nombre", type: "string", example: "Laptop Dell"),
+                    new OA\Property(property: "descripcion", type: "string", example: "Laptop 15 pulgadas", nullable: true),
+                    new OA\Property(property: "precio", type: "number", format: "float", example: 12999.99),
+                    new OA\Property(property: "cantidad_disponible", type: "integer", example: 25),
                     new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
                     new OA\Property(property: "proveedor", type: "integer", nullable: true),
-                    new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
                     new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
                 ]
             )
