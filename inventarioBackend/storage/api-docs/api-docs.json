@@ -20,6 +20,735 @@
         }
     ],
     "paths": {
+        "/clientes": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Listar clientes",
+                "description": "Obtiene la lista de todos los clientes",
+                "operationId": "7aa757aabf401d9785806bc70eddc717",
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Crear cliente",
+                "description": "Crea un nuevo cliente",
+                "operationId": "1dab3ff2899ad17763b0498558c2a415",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "example": "juan@email.com"
+                                    },
+                                    "telefono": {
+                                        "type": "string",
+                                        "example": "555-0123"
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "example": "Av. Principal 123"
+                                    },
+                                    "estado": {
+                                        "type": "string",
+                                        "example": "activo"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cliente creado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/clientes/{id}": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Mostrar cliente",
+                "operationId": "d9b05d1ceb74347c3c873cee2e68ed49",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cliente encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Actualizar cliente",
+                "operationId": "27dfeb02f687fe5aa827c385a7fb761c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "telefono": {
+                                        "type": "string",
+                                        "example": "555-0123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente actualizado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Eliminar cliente",
+                "operationId": "f4788f1df5177360b620236fd884e1e7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cliente eliminado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/clientes/activos": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Listar clientes activos",
+                "operationId": "cf783046c8cd5c8b5debb66c14857084",
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes activos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/gestion-facturas": {
+            "get": {
+                "tags": [
+                    "Facturas"
+                ],
+                "summary": "Listar facturas",
+                "description": "Obtiene la lista de todas las facturas",
+                "operationId": "7aa2c40bd7808b420fd21defcbf6d891",
+                "responses": {
+                    "200": {
+                        "description": "Lista de facturas"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/gestion-facturas/{id}": {
+            "get": {
+                "tags": [
+                    "Facturas"
+                ],
+                "summary": "Mostrar factura",
+                "operationId": "a94c81937225c21ff8138c74de87798a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Factura encontrada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Facturas"
+                ],
+                "summary": "Eliminar factura",
+                "operationId": "85b925d282d35a6805e8836591755777",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Factura eliminada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/gestion-facturas/{id}/archivar": {
+            "post": {
+                "tags": [
+                    "Facturas"
+                ],
+                "summary": "Archivar factura",
+                "operationId": "be3d36aa59a6e7827de0aeb76a5f056f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Factura archivada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/productos": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Listar productos",
+                "description": "Obtiene la lista de todos los productos del inventario",
+                "operationId": "b51130b1d1fa0df339363fdb239edbdd",
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontraron productos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Crear producto",
+                "description": "Crea un nuevo producto en el inventario",
+                "operationId": "77a62ae3766dfb9fa3ca17c82a8125bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "codigoProducto": {
+                                        "type": "string",
+                                        "example": "PROD-001"
+                                    },
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Laptop Dell"
+                                    },
+                                    "descripcion": {
+                                        "type": "string",
+                                        "example": "Laptop 15 pulgadas"
+                                    },
+                                    "precio": {
+                                        "type": "number",
+                                        "example": 12999.99
+                                    },
+                                    "cantidad": {
+                                        "type": "integer",
+                                        "example": 25
+                                    },
+                                    "categoria": {
+                                        "type": "string",
+                                        "example": "Electrónica"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Producto creado"
+                    },
+                    "400": {
+                        "description": "Datos no válidos"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/productos/{id}": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Mostrar producto",
+                "description": "Obtiene la información de un producto específico",
+                "operationId": "1e9d331589a70da22515345862342e85",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Actualizar producto",
+                "description": "Actualiza la información de un producto existente",
+                "operationId": "8a70fd002421132df33fd17c28ae7e8c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Laptop Dell Actualizada"
+                                    },
+                                    "precio": {
+                                        "type": "number",
+                                        "example": 13999.99
+                                    },
+                                    "cantidad": {
+                                        "type": "integer",
+                                        "example": 30
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Producto actualizado"
+                    },
+                    "400": {
+                        "description": "Datos no válidos"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Eliminar producto",
+                "description": "Elimina un producto del inventario",
+                "operationId": "26bc7d58b5a6016e79463c9aa740b4a0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto eliminado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "Producto no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/proveedores": {
+            "get": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Listar proveedores",
+                "operationId": "1abb63a6091767636a24c7e1f02af10a",
+                "responses": {
+                    "200": {
+                        "description": "Lista de proveedores"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Crear proveedor",
+                "operationId": "e568e4451d58109affdf9f5eba4e2a0c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Distribuidora Tech"
+                                    },
+                                    "correo": {
+                                        "type": "string",
+                                        "example": "ventas@tech.com"
+                                    },
+                                    "telefono": {
+                                        "type": "string",
+                                        "example": "555-9876"
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "example": "Calle Industria 456"
+                                    },
+                                    "estado": {
+                                        "type": "string",
+                                        "example": "activo"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Proveedor creado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/proveedores/{id}": {
+            "get": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Mostrar proveedor",
+                "operationId": "f0842cb3e8ea3ece0726a1256148fecd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Proveedor encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Actualizar proveedor",
+                "operationId": "8d9687fc325be404b71cf0bd676fed40",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Proveedor actualizado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Eliminar proveedor",
+                "operationId": "676447ece60527de56d59d2274c3e366",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Proveedor eliminado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/proveedores/activos": {
+            "get": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Listar proveedores activos",
+                "operationId": "76a23da96715680101e4851c44239f0c",
+                "responses": {
+                    "200": {
+                        "description": "Lista de proveedores activos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/register": {
             "post": {
                 "tags": [
@@ -342,6 +1071,137 @@
                     },
                     "404": {
                         "description": "Usuario no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ventas": {
+            "get": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Listar ventas",
+                "description": "Obtiene la lista de todas las ventas",
+                "operationId": "d48290aa12cc8ae059010ed4a55d6ad5",
+                "responses": {
+                    "200": {
+                        "description": "Lista de ventas"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Crear venta",
+                "description": "Registra una nueva venta",
+                "operationId": "4041d0347b43ccd7392f0cd25c39d683",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_cliente": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id_producto": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Venta creada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ventas/{id}": {
+            "get": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Mostrar venta",
+                "operationId": "7b3fafcce1667fb94849232e15f8877f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venta encontrada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ventas/historial": {
+            "get": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Historial de ventas",
+                "description": "Obtiene el historial completo de ventas",
+                "operationId": "ed66c63a4ccd8a297e81e253361316ac",
+                "responses": {
+                    "200": {
+                        "description": "Historial de ventas"
+                    },
+                    "401": {
+                        "description": "No autenticado"
                     }
                 },
                 "security": [
@@ -697,6 +1557,26 @@
         {
             "name": "Usuarios",
             "description": "Gestión de usuarios del sistema"
+        },
+        {
+            "name": "Productos",
+            "description": "Gestión de productos"
+        },
+        {
+            "name": "Clientes",
+            "description": "Gestión de clientes"
+        },
+        {
+            "name": "Facturas",
+            "description": "Gestión de facturas"
+        },
+        {
+            "name": "Ventas",
+            "description": "Gestión de ventas"
+        },
+        {
+            "name": "Proveedores",
+            "description": "Gestión de proveedores"
         },
         {
             "name": "Autenticación",

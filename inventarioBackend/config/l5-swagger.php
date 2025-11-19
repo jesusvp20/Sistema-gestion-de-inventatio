@@ -44,9 +44,14 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app/Http/Controllers/UsuariosDocs.php'),
                     base_path('app/Http/Controllers/Controller.php'),
                     base_path('app/Http/Controllers/DocumentationSchemas.php'),
+                    base_path('app/Http/Controllers/UsuariosDocs.php'),
+                    base_path('app/Http/Controllers/ProductosDocs.php'),
+                    base_path('app/Http/Controllers/ClientesDocs.php'),
+                    base_path('app/Http/Controllers/ProveedoresDocs.php'),
+                    base_path('app/Http/Controllers/VentasDocs.php'),
+                    base_path('app/Http/Controllers/FacturasDocs.php'),
                 ],
                 
                 /*
