@@ -13,48 +13,54 @@ return new class extends Migration
     {
         $driver = config('database.default');
         
-        // Primero convertir los datos existentes de boolean a string
+        // Crear columna temporal para todos los casos
+        Schema::table('producto', function (Blueprint $table) use ($driver) {
+            if ($driver === 'sqlite') {
+                $table->string('estado_temp', 20)->default('disponible');
+            } else {
+                $table->string('estado_temp', 20)->default('disponible');
+            }
+        });
+        
+        // Convertir los datos de boolean a string según el driver
         if ($driver === 'sqlite') {
-            \DB::statement("UPDATE producto SET estado = CASE 
+            \DB::statement("UPDATE producto SET estado_temp = CASE 
                 WHEN CAST(estado AS TEXT) = '1' THEN 'disponible' 
                 WHEN CAST(estado AS TEXT) = '0' THEN 'agotado' 
                 ELSE 'disponible' 
             END");
+        } elseif ($driver === 'pgsql') {
+            // PostgreSQL: convertir boolean a string
+            \DB::statement("UPDATE producto SET estado_temp = CASE 
+                WHEN estado = true THEN 'disponible' 
+                WHEN estado = false THEN 'agotado' 
+                ELSE 'disponible' 
+            END");
         } else {
-            \DB::statement("UPDATE producto SET estado = CASE 
-                WHEN estado = true OR estado = 1 THEN 'disponible' 
-                WHEN estado = false OR estado = 0 THEN 'agotado' 
+            // MySQL y otros
+            \DB::statement("UPDATE producto SET estado_temp = CASE 
+                WHEN estado = 1 OR estado = true THEN 'disponible' 
+                WHEN estado = 0 OR estado = false THEN 'agotado' 
                 ELSE 'disponible' 
             END");
         }
         
-        // Para SQLite necesitamos recrear la tabla
-        if ($driver === 'sqlite') {
-            Schema::table('producto', function (Blueprint $table) {
-                $table->string('estado_temp', 20)->default('disponible');
-            });
-            
-            \DB::statement("UPDATE producto SET estado_temp = estado");
-            
-            Schema::table('producto', function (Blueprint $table) {
-                $table->dropColumn('estado');
-            });
-            
-            Schema::table('producto', function (Blueprint $table) {
-                $table->string('estado', 20)->default('disponible');
-            });
-            
-            \DB::statement("UPDATE producto SET estado = estado_temp");
-            
-            Schema::table('producto', function (Blueprint $table) {
-                $table->dropColumn('estado_temp');
-            });
-        } else {
-            // Para PostgreSQL, MySQL, etc. usar change()
-            Schema::table('producto', function (Blueprint $table) {
-                $table->string('estado', 20)->default('disponible')->change();
-            });
-        }
+        // Eliminar columna original y renombrar la temporal
+        Schema::table('producto', function (Blueprint $table) {
+            $table->dropColumn('estado');
+        });
+        
+        Schema::table('producto', function (Blueprint $table) {
+            $table->string('estado', 20)->default('disponible');
+        });
+        
+        // Copiar datos de la temporal a la nueva
+        \DB::statement("UPDATE producto SET estado = estado_temp");
+        
+        // Eliminar columna temporal
+        Schema::table('producto', function (Blueprint $table) {
+            $table->dropColumn('estado_temp');
+        });
     }
 
     /**
