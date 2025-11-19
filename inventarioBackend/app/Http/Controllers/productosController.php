@@ -31,15 +31,27 @@ class productosController extends Controller
     {
         try {
             $productos = productosModel::all();
+            
+            if ($productos->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No hay productos registrados en el inventario',
+                    'data' => [],
+                    'statusCode' => 200
+                ], 200);
+            }
+            
             return response()->json([
-                'status' => 'success', 
+                'status' => 'success',
+                'message' => 'Productos obtenidos exitosamente',
                 'data' => $productos,
                 'statusCode' => 200
             ], 200);
         } catch (\Exception $e) {
+            \Log::error('Error al listar productos: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al listar productos: ' . $e->getMessage(),
+                'message' => 'Error al obtener la lista de productos',
                 'statusCode' => 500
             ], 500);
         }
@@ -93,12 +105,24 @@ class productosController extends Controller
                 'proveedor' => 'nullable|integer',
                 'codigoProducto' => 'nullable|string|max:255|unique:producto,codigoProducto',
                 'estado' => 'required|boolean'
+            ], [
+                'nombre.required' => 'El nombre del producto es obligatorio',
+                'nombre.max' => 'El nombre no puede exceder 255 caracteres',
+                'precio.required' => 'El precio es obligatorio',
+                'precio.numeric' => 'El precio debe ser un número válido',
+                'precio.min' => 'El precio no puede ser negativo',
+                'cantidad_disponible.required' => 'La cantidad es obligatoria',
+                'cantidad_disponible.integer' => 'La cantidad debe ser un número entero',
+                'cantidad_disponible.min' => 'La cantidad no puede ser negativa',
+                'codigoProducto.unique' => 'Este código de producto ya existe',
+                'estado.required' => 'El estado es obligatorio',
+                'estado.boolean' => 'El estado debe ser verdadero o falso'
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Datos no válidos',
+                    'message' => 'Datos no válidos. Por favor, revise los campos.',
                     'errors' => $validator->errors(),
                     'statusCode' => 400
                 ], 400);
@@ -140,11 +164,31 @@ class productosController extends Controller
     #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function show($id)
     {
-        $producto = productosModel::find($id);
-        if (!$producto) {
-            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        try {
+            $producto = productosModel::find($id);
+            
+            if (!$producto) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'El producto con ID ' . $id . ' no fue encontrado',
+                    'statusCode' => 404
+                ], 404);
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Producto obtenido exitosamente',
+                'data' => $producto,
+                'statusCode' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al mostrar producto: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el producto',
+                'statusCode' => 500
+            ], 500);
         }
-        return response()->json(['status' => 'success', 'data' => $producto]);
     }
 
     #[OA\Put(
@@ -183,16 +227,60 @@ class productosController extends Controller
     #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function update(Request $request, $id)
     {
-        $producto = productosModel::find($id);
-        if (!$producto) {
-            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        try {
+            $producto = productosModel::find($id);
+            
+            if (!$producto) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'El producto con ID ' . $id . ' no fue encontrado',
+                    'statusCode' => 404
+                ], 404);
+            }
+            
+            $validator = Validator::make($request->all(), [
+                'nombre' => 'sometimes|string|max:255',
+                'descripcion' => 'nullable|string',
+                'precio' => 'sometimes|numeric|min:0',
+                'cantidad_disponible' => 'sometimes|integer|min:0',
+                'categoria' => 'nullable|string|max:255',
+                'codigoProducto' => 'nullable|string|max:255|unique:producto,codigoProducto,' . $id . ',IdProducto',
+                'estado' => 'sometimes|boolean'
+            ], [
+                'nombre.max' => 'El nombre no puede exceder 255 caracteres',
+                'precio.numeric' => 'El precio debe ser un número válido',
+                'precio.min' => 'El precio no puede ser negativo',
+                'cantidad_disponible.integer' => 'La cantidad debe ser un número entero',
+                'cantidad_disponible.min' => 'La cantidad no puede ser negativa',
+                'codigoProducto.unique' => 'Este código de producto ya existe',
+                'estado.boolean' => 'El estado debe ser verdadero o falso'
+            ]);
+            
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Datos no válidos. Por favor, revise los campos.',
+                    'errors' => $validator->errors(),
+                    'statusCode' => 400
+                ], 400);
+            }
+            
+            $producto->update($request->all());
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Producto actualizado exitosamente',
+                'data' => $producto->fresh(),
+                'statusCode' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al actualizar producto: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al actualizar el producto',
+                'statusCode' => 500
+            ], 500);
         }
-        $producto->update($request->all());
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Producto actualizado exitosamente',
-            'data' => $producto
-        ]);
     }
 
     #[OA\Delete(
@@ -215,15 +303,33 @@ class productosController extends Controller
     #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function destroy($id)
     {
-        $producto = productosModel::find($id);
-        if (!$producto) {
-            return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
+        try {
+            $producto = productosModel::find($id);
+            
+            if (!$producto) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'El producto con ID ' . $id . ' no fue encontrado',
+                    'statusCode' => 404
+                ], 404);
+            }
+            
+            $nombreProducto = $producto->nombre;
+            $producto->delete();
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'El producto "' . $nombreProducto . '" se ha eliminado correctamente',
+                'statusCode' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al eliminar producto: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al eliminar el producto. Puede que esté relacionado con ventas o facturas.',
+                'statusCode' => 500
+            ], 500);
         }
-        $producto->delete();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'El producto se ha eliminado correctamente'
-        ]);
     }
 
     #[OA\Patch(

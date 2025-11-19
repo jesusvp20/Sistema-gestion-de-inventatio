@@ -29,18 +29,32 @@ class ClientesController extends Controller
     #[OA\Response(response: 404, description: "No se encontraron clientes")]
     public function index()
     {
-        $clientes = ClientesModel::all();
-        if ($clientes->isEmpty()) {
+        try {
+            $clientes = ClientesModel::all();
+            
+            if ($clientes->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No hay clientes registrados en el sistema',
+                    'data' => [],
+                    'statusCode' => 200
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Clientes obtenidos exitosamente',
+                'data' => $clientes,
+                'statusCode' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al listar clientes: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'No hay clientes registrados',
-            ], 404);
+                'message' => 'Error al obtener la lista de clientes',
+                'statusCode' => 500
+            ], 500);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $clientes
-        ], 200);
     }
 
     #[OA\Post(
@@ -84,13 +98,25 @@ class ClientesController extends Controller
                 'identificacion' => 'required|string|max:50|unique:clientes',
                 'telefono' => 'required|string|max:100',
                 'estado' => 'required|boolean',
+            ], [
+                'nombre.required' => 'El nombre del cliente es obligatorio',
+                'nombre.max' => 'El nombre no puede exceder 255 caracteres',
+                'email.required' => 'El email es obligatorio',
+                'email.email' => 'El email debe ser una dirección válida',
+                'email.unique' => 'Este email ya está registrado',
+                'identificacion.required' => 'La identificación es obligatoria',
+                'identificacion.unique' => 'Esta identificación ya está registrada',
+                'telefono.required' => 'El teléfono es obligatorio',
+                'estado.required' => 'El estado es obligatorio',
+                'estado.boolean' => 'El estado debe ser verdadero o falso'
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Datos invalidos',
-                    'errors' => $validator->errors()
+                    'message' => 'Datos no válidos. Por favor, revise los campos.',
+                    'errors' => $validator->errors(),
+                    'statusCode' => 400
                 ], 400);
             }
 
@@ -178,8 +204,9 @@ class ClientesController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Datos invalidos',
-                    'errors' => $validator->errors()
+                    'message' => 'Datos no válidos. Por favor, revise los campos.',
+                    'errors' => $validator->errors(),
+                    'statusCode' => 400
                 ], 400);
             }
 
@@ -188,13 +215,16 @@ class ClientesController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Cliente actualizado exitosamente',
-                'data' => $cliente
+                'data' => $cliente->fresh(),
+                'statusCode' => 200
             ], 200);
 
         } catch (\Exception $e) {
+            \Log::error('Error al actualizar cliente: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => 'Error al actualizar el cliente',
+                'statusCode' => 500
             ], 500);
         }
     }
@@ -227,21 +257,26 @@ class ClientesController extends Controller
             if (!$cliente) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Cliente no encontrado',
+                    'message' => 'El cliente con ID ' . $id . ' no fue encontrado',
+                    'statusCode' => 404
                 ], 404);
             }
 
+            $nombreCliente = $cliente->nombre;
             $cliente->delete();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'El cliente se ha eliminado correctamente'
+                'message' => 'El cliente "' . $nombreCliente . '" se ha eliminado correctamente',
+                'statusCode' => 200
             ], 200);
 
         } catch (\Exception $e) {
+            \Log::error('Error al eliminar cliente: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => 'Error al eliminar el cliente. Puede que esté relacionado con ventas o facturas.',
+                'statusCode' => 500
             ], 500);
         }
     }
