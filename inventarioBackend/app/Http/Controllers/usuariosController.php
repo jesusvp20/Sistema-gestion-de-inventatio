@@ -90,7 +90,7 @@ class usuariosController extends Controller
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(property: "correo", type: "string", format: "email", example: "admin@sistema.com"),
-                    new OA\Property(property: "password", type: "string", example: "Admin2024!")
+                    new OA\Property(property: "contraseña", type: "string", example: "Admin2024!")
                 ]
             )
         )
@@ -123,12 +123,12 @@ class usuariosController extends Controller
             // Validación de entrada
             $validator = Validator::make($request->all(), [
                 'correo' => 'required|string|email|max:255',
-                'password' => 'required|string|min:6'
+                'contraseña' => 'required|string|min:6'
             ], [
                 'correo.required' => 'El correo es requerido',
                 'correo.email' => 'El correo debe ser una dirección válida',
-                'password.required' => 'La contraseña es requerida',
-                'password.min' => 'La contraseña debe tener al menos 6 caracteres'
+                'contraseña.required' => 'La contraseña es requerida',
+                'contraseña.min' => 'La contraseña debe tener al menos 6 caracteres'
             ]);
 
             if ($validator->fails()) {
@@ -144,7 +144,7 @@ class usuariosController extends Controller
             $usuario = UsuariosModel::where('correo', $request->correo)->first();
 
             // Verificar credenciales
-            if (!$usuario || !Hash::check($request->password, $usuario->contraseña)) {
+            if (!$usuario || !Hash::check($request->contraseña, $usuario->contraseña)) {
                 // Usar mensaje genérico para no revelar si el usuario existe
                 return response()->json([
                     'status' => 'error',
@@ -209,9 +209,8 @@ class usuariosController extends Controller
     #[OA\Get(
         path: "/user",
         summary: "Obtener usuario autenticado",
-        description: "Retorna la información del usuario actualmente autenticado mediante token Bearer",
-        tags: ["Usuarios"],
-        security: [["bearerAuth" => []]]
+        description: "Retorna la información del usuario actualmente autenticado mediante token Bearer (opcional)",
+        tags: ["Usuarios"]
     )]
     #[OA\Response(response: 200, description: "Usuario autenticado obtenido exitosamente")]
     #[OA\Response(response: 401, description: "No autenticado o token inválido")]
@@ -265,9 +264,8 @@ class usuariosController extends Controller
     #[OA\Post(
         path: "/logout",
         summary: "Cerrar sesión",
-        description: "Revoca todos los tokens de acceso del usuario autenticado",
-        tags: ["Usuarios"],
-        security: [["bearerAuth" => []]]
+        description: "Revoca todos los tokens de acceso del usuario autenticado (opcional)",
+        tags: ["Usuarios"]
     )]
     #[OA\Response(response: 200, description: "Sesión cerrada exitosamente")]
     #[OA\Response(response: 401, description: "No autenticado")]

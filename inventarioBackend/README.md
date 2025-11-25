@@ -60,7 +60,7 @@ Edita el archivo `.env`:
 APP_NAME="Sistema de Gestión de Inventario"
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost:8000
+APP_URL=http://127.0.0.1:8000
 
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
@@ -96,13 +96,13 @@ php artisan l5-swagger:generate
 php artisan serve
 ```
 
-La API estará disponible en: `http://localhost:8000`
+La API estará disponible en: `127.0.0.1:8000`
 
-**Documentación API (Swagger):** `http://localhost:8000/api/documentation`
+**Documentación API (Swagger):** `127.0.0.1:8000/api/documentation/`
 
 ---
 
-## 📚 Uso de la API
+##  Uso de la API
 
 ### Autenticación
 
@@ -144,11 +144,11 @@ Authorization: Bearer {token}
 - **Facturas:** `/api/facturas`
 - **Reportes:** `/api/reportes/ventas`
 
-Consulta la documentación completa en Swagger: `http://localhost:8000/api/documentation`
+Consulta la documentación completa en Swagger: `127.0.0.1:8000/api/documentation/`
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 php artisan test
@@ -156,16 +156,14 @@ php artisan test
 
 ---
 
-## 📄 Documentación
+## Documentación
 
 - **API Documentation (Swagger):** Disponible en `/api/documentation` cuando el servidor está corriendo
-- **Archivos de documentación adicional:**
-  - `INSTRUCCIONES-SWAGGER.md` - Guía de Swagger
-  - `RESUMEN-CORRECCIONES.md` - Correcciones realizadas
+- **Datos de Prueba:** Ver `DATOS-PRUEBA-API.md` para ejemplos de uso de la API
 
 ---
 
-## 🚀 Despliegue
+##  Despliegue
 
 ### Configuración para Producción
 
@@ -177,6 +175,6 @@ php artisan test
 
 ---
 
-## 📝 Licencia
+##  Licencia
 
 Este proyecto está bajo la Licencia MIT.

@@ -45,13 +45,14 @@ return [
                  */
                 'annotations' => [
                     base_path('app/Http/Controllers/Controller.php'),
-                    base_path('app/Http/Controllers/DocumentationSchemas.php'),
-                    base_path('app/Http/Controllers/UsuariosDocs.php'),
-                    base_path('app/Http/Controllers/ProductosDocs.php'),
-                    base_path('app/Http/Controllers/ClientesDocs.php'),
-                    base_path('app/Http/Controllers/ProveedoresDocs.php'),
-                    base_path('app/Http/Controllers/VentasDocs.php'),
-                    base_path('app/Http/Controllers/FacturasDocs.php'),
+                    base_path('app/documentacion/DocumentationSchemas.php'),
+                    base_path('app/documentacion/UsuariosDocs.php'),
+                    base_path('app/documentacion/ProductosDocs.php'),
+                    base_path('app/documentacion/ClientesDocs.php'),
+                    base_path('app/documentacion/ProveedoresDocs.php'),
+                    base_path('app/documentacion/VentasDocs.php'),
+                    base_path('app/documentacion/FacturasDocs.php'),
+                    // base_path('app/documentacion/DetalleFacturaDocs.php'), // MODIFICADO: 2025-11-24 - Comentado porque los endpoints ya no existen
                 ],
                 
                 /*
@@ -62,8 +63,9 @@ return [
                     base_path('app/Http/Controllers/proveedoresController.php'),
                     base_path('app/Http/Controllers/productosController.php'),
                     base_path('app/Http/Controllers/ClientesController.php'),
-                    base_path('app/Http/Controllers/DetalleFacturaController.php'),
                     base_path('app/Http/Controllers/DetalleVentasController.php'),
+                    base_path('app/Http/Controllers/facturaController.php'),
+                    base_path('app/Http/Controllers/DetalleFacturaController.php'),
                 ],
             ],
         ],

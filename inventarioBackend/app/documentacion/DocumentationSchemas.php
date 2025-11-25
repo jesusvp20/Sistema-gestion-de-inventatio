@@ -1,6 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+/**
+ * CAMBIO REALIZADO: 2025-11-24
+ * 
+ * QUÉ SE CAMBIÓ:
+ * - Archivo movido desde app/Http/Controllers/DocumentationSchemas.php a app/documentacion/DocumentationSchemas.php
+ * - Namespace actualizado de App\Http\Controllers a App\Documentacion
+ * 
+ * POR QUÉ SE CAMBIÓ:
+ * - Para mantener la organización del código, agrupando todos los archivos de documentación
+ *   de Swagger/OpenAPI en la carpeta documentacion junto con los demás archivos de documentación
+ *   (UsuariosDocs.php, ProductosDocs.php, ClientesDocs.php, etc.)
+ * 
+ * FECHA Y HORA: 2025-11-24 11:18:13
+ */
+
+namespace App\Documentacion;
 
 use OpenApi\Attributes as OA;
 
@@ -28,7 +43,9 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
         new OA\Property(property: "proveedor", type: "integer", nullable: true),
         new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
-        new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
+        new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible"),
+        new OA\Property(property: "fecha_creacion", type: "string", format: "date", example: "15/01/2024", description: "Fecha de creación en formato dd/mm/AAAA", nullable: true),
+        new OA\Property(property: "fecha_actualizacion", type: "string", format: "date", example: "15/01/2024", description: "Fecha de actualización en formato dd/mm/AAAA", nullable: true)
     ]
 )]
 #[OA\Schema(
@@ -46,10 +63,10 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: "LoginRequest",
     type: "object",
-    required: ["correo", "password"],
+    required: ["correo", "contraseña"],
     properties: [
         new OA\Property(property: "correo", type: "string", format: "email", example: "admin@sistema.com"),
-        new OA\Property(property: "password", type: "string", format: "password", example: "Admin2024!")
+        new OA\Property(property: "contraseña", type: "string", format: "password", example: "Admin2024!")
     ]
 )]
 #[OA\Schema(
@@ -79,7 +96,7 @@ use OpenApi\Attributes as OA;
     type: "object",
     properties: [
         new OA\Property(property: "id_ventas", type: "integer", example: 1),
-        new OA\Property(property: "fecha_venta", type: "string", format: "date-time", example: "2024-01-15 10:30:00"),
+        new OA\Property(property: "fecha_venta", type: "string", format: "date", example: "15/01/2024", description: "Fecha de venta en formato dd/mm/AAAA"),
         new OA\Property(property: "total", type: "number", format: "float", example: 150.50),
         new OA\Property(property: "id_cliente", type: "integer", example: 1),
         new OA\Property(property: "cliente", ref: "#/components/schemas/Cliente"),
@@ -104,13 +121,15 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: "id", type: "integer", example: 1),
         new OA\Property(property: "numero_facturas", type: "string", example: "F-000001"),
-        new OA\Property(property: "fecha", type: "string", format: "date-time", example: "2024-01-15 10:30:00"),
+        new OA\Property(property: "fecha", type: "string", format: "date", example: "15/01/2024", description: "Fecha de factura en formato dd/mm/AAAA"),
         new OA\Property(property: "total", type: "number", format: "float", example: 150.50),
         new OA\Property(property: "cliente_id", type: "integer", example: 1),
-        new OA\Property(property: "estado", type: "boolean", example: true),
+        new OA\Property(property: "proveedor_id", type: "integer", example: 1, nullable: true),
+        new OA\Property(property: "estado", type: "string", enum: ["pendiente", "disponible", "agotado"], example: "pendiente"),
         new OA\Property(property: "cliente", ref: "#/components/schemas/Cliente"),
-        new OA\Property(property: "detalles", type: "array", items: new OA\Items(ref: "#/components/schemas/DetalleFactura")),
-        new OA\Property(property: "pdf_path", type: "string", nullable: true, example: "storage/facturas/factura_001.pdf")
+        new OA\Property(property: "proveedor", ref: "#/components/schemas/Proveedor", nullable: true),
+        new OA\Property(property: "detalles", type: "array", items: new OA\Items(ref: "#/components/schemas/DetalleFactura"))
+        // MODIFICADO: 2025-11-24 - Eliminado pdf_path del schema (PDF se genera en Angular, no en backend)
     ]
 )]
 #[OA\Schema(

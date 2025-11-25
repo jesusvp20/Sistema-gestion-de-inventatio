@@ -15,7 +15,7 @@
             "description": "Servidor Producción (Render)"
         },
         {
-            "url": "http://localhost:8000/api",
+            "url": "http://127.0.0.1:8000/api",
             "description": "Servidor Local"
         }
     ],
@@ -27,7 +27,7 @@
                 ],
                 "summary": "Listar clientes",
                 "description": "Obtiene la lista de todos los clientes",
-                "operationId": "7aa757aabf401d9785806bc70eddc717",
+                "operationId": "861db01d94bcca17a0c8cc7ccb2632f3",
                 "responses": {
                     "200": {
                         "description": "Lista de clientes"
@@ -35,12 +35,7 @@
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
@@ -48,35 +43,59 @@
                 ],
                 "summary": "Crear cliente",
                 "description": "Crea un nuevo cliente",
-                "operationId": "1dab3ff2899ad17763b0498558c2a415",
+                "operationId": "6e7bb477a5969abf8c54a313a2fe0c05",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "nombre",
+                                    "email",
+                                    "identificacion",
+                                    "telefono"
+                                ],
                                 "properties": {
                                     "nombre": {
                                         "type": "string",
                                         "example": "Juan Pérez"
                                     },
-                                    "correo": {
+                                    "email": {
+                                        "description": "Correo electrónico (también acepta 'correo')",
                                         "type": "string",
+                                        "format": "email",
                                         "example": "juan@email.com"
+                                    },
+                                    "correo": {
+                                        "description": "Alias de 'email'",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan@email.com",
+                                        "nullable": true
+                                    },
+                                    "identificacion": {
+                                        "description": "Número de identificación del cliente (requerido y único)",
+                                        "type": "string",
+                                        "example": "123456789"
                                     },
                                     "telefono": {
                                         "type": "string",
                                         "example": "555-0123"
                                     },
-                                    "direccion": {
-                                        "type": "string",
-                                        "example": "Av. Principal 123"
-                                    },
                                     "estado": {
-                                        "type": "string",
-                                        "example": "activo"
+                                        "description": "Estado: true/false o 'activo'/'inactivo'",
+                                        "type": "boolean",
+                                        "example": true
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "example": {
+                                "nombre": "Juan Pérez",
+                                "correo": "juan@email.com",
+                                "identificacion": "123456789",
+                                "telefono": "555-0123",
+                                "estado": "activo"
                             }
                         }
                     }
@@ -88,12 +107,7 @@
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/clientes/{id}": {
@@ -102,7 +116,7 @@
                     "Clientes"
                 ],
                 "summary": "Mostrar cliente",
-                "operationId": "d9b05d1ceb74347c3c873cee2e68ed49",
+                "operationId": "b3d9431f2f45555a36c9a6cdb7617e7e",
                 "parameters": [
                     {
                         "name": "id",
@@ -123,19 +137,14 @@
                     "404": {
                         "description": "Cliente no encontrado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
                     "Clientes"
                 ],
                 "summary": "Actualizar cliente",
-                "operationId": "27dfeb02f687fe5aa827c385a7fb761c",
+                "operationId": "569286eff49f372fe41f605a3e8646b8",
                 "parameters": [
                     {
                         "name": "id",
@@ -173,19 +182,14 @@
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
                     "Clientes"
                 ],
                 "summary": "Eliminar cliente",
-                "operationId": "f4788f1df5177360b620236fd884e1e7",
+                "operationId": "f602197c487bf87294e8ede7c8e44e94",
                 "parameters": [
                     {
                         "name": "id",
@@ -203,12 +207,7 @@
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/clientes/activos": {
@@ -217,49 +216,166 @@
                     "Clientes"
                 ],
                 "summary": "Listar clientes activos",
-                "operationId": "cf783046c8cd5c8b5debb66c14857084",
+                "operationId": "461e52973e3daf05e6d41f6c7ded00b5",
                 "responses": {
                     "200": {
                         "description": "Lista de clientes activos"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
-        "/gestion-facturas": {
+        "/facturas": {
             "get": {
                 "tags": [
                     "Facturas"
                 ],
-                "summary": "Listar facturas",
-                "description": "Obtiene la lista de todas las facturas",
-                "operationId": "7aa2c40bd7808b420fd21defcbf6d891",
+                "summary": "Listar facturas con detalles",
+                "operationId": "46f74f7355699a5b654a80618135c321",
+                "parameters": [
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "cliente",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "estado",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "fecha"
+                        }
+                    },
+                    {
+                        "name": "order_dir",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Lista de facturas"
-                    },
-                    "401": {
-                        "description": "No autenticado"
+                        "description": "Lista paginada de facturas"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/gestion-facturas/{id}": {
-            "get": {
+                }
+            },
+            "post": {
                 "tags": [
                     "Facturas"
                 ],
-                "summary": "Mostrar factura",
-                "operationId": "a94c81937225c21ff8138c74de87798a",
+                "summary": "Crear factura",
+                "description": "Crea una nueva factura con sus detalles de productos",
+                "operationId": "87a9cdce503173abfc78b6d974ed952d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cliente_id",
+                                    "detalles"
+                                ],
+                                "properties": {
+                                    "cliente_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "proveedor_id": {
+                                        "description": "ID del proveedor (opcional)",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_facturas": {
+                                        "type": "string",
+                                        "example": "F-000123",
+                                        "nullable": true
+                                    },
+                                    "detalles": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "producto_id",
+                                                "cantidad"
+                                            ],
+                                            "properties": {
+                                                "producto_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Factura creada exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos o stock insuficiente"
+                    }
+                }
+            }
+        },
+        "/facturas/{id}": {
+            "put": {
+                "tags": [
+                    "Facturas"
+                ],
+                "summary": "Actualizar factura",
+                "description": "Actualiza una factura existente. Puede actualizar los datos de la factura y/o sus detalles. Los detalles se actualizan enviando el array 'detalles' con los detalles a modificar (con 'id' para actualizar) o nuevos (sin 'id' para crear).",
+                "operationId": "db34c00c02a8b8a650de60d3a44ec812",
                 "parameters": [
                     {
                         "name": "id",
@@ -270,26 +386,86 @@
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Factura encontrada"
-                    },
-                    "401": {
-                        "description": "No autenticado"
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cliente_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "proveedor_id": {
+                                        "description": "ID del proveedor (opcional)",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "numero_facturas": {
+                                        "type": "string",
+                                        "example": "F-000123"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-11-19"
+                                    },
+                                    "estado": {
+                                        "description": "Estado de la factura: pendiente, disponible o agotado (acepta mayúsculas y minúsculas)",
+                                        "type": "string",
+                                        "enum": [
+                                            "pendiente",
+                                            "disponible",
+                                            "agotado"
+                                        ]
+                                    },
+                                    "detalles": {
+                                        "description": "Array opcional de detalles. Incluir 'id' para actualizar detalle existente, omitir 'id' para crear nuevo detalle",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID del detalle (opcional, solo para actualizar)",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "producto_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
                     }
                 },
-                "security": [
-                    {
-                        "bearerAuth": []
+                "responses": {
+                    "200": {
+                        "description": "Factura actualizada exitosamente"
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    },
+                    "404": {
+                        "description": "Factura no encontrada"
                     }
-                ]
+                }
             },
             "delete": {
                 "tags": [
                     "Facturas"
                 ],
                 "summary": "Eliminar factura",
-                "operationId": "85b925d282d35a6805e8836591755777",
+                "operationId": "c5ba0b071b568d6b075704fdd9cee86d",
                 "parameters": [
                     {
                         "name": "id",
@@ -302,49 +478,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Factura eliminada"
+                        "description": "Factura eliminada exitosamente"
                     },
-                    "401": {
-                        "description": "No autenticado"
+                    "404": {
+                        "description": "Factura no encontrada"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/gestion-facturas/{id}/archivar": {
-            "post": {
-                "tags": [
-                    "Facturas"
-                ],
-                "summary": "Archivar factura",
-                "operationId": "be3d36aa59a6e7827de0aeb76a5f056f",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Factura archivada"
-                    },
-                    "401": {
-                        "description": "No autenticado"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/productos": {
@@ -353,84 +492,33 @@
                     "Productos"
                 ],
                 "summary": "Listar productos",
-                "description": "Obtiene la lista de todos los productos del inventario",
-                "operationId": "b51130b1d1fa0df339363fdb239edbdd",
+                "operationId": "66cac7d9af6b28ce9949a919094a0295",
                 "responses": {
                     "200": {
-                        "description": "Lista de productos"
+                        "description": "Lista de productos obtenida exitosamente"
                     },
-                    "401": {
-                        "description": "No autenticado"
-                    },
-                    "404": {
-                        "description": "No se encontraron productos"
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "Productos"
                 ],
                 "summary": "Crear producto",
-                "description": "Crea un nuevo producto en el inventario",
-                "operationId": "77a62ae3766dfb9fa3ca17c82a8125bd",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "codigoProducto": {
-                                        "type": "string",
-                                        "example": "PROD-001"
-                                    },
-                                    "nombre": {
-                                        "type": "string",
-                                        "example": "Laptop Dell"
-                                    },
-                                    "descripcion": {
-                                        "type": "string",
-                                        "example": "Laptop 15 pulgadas"
-                                    },
-                                    "precio": {
-                                        "type": "number",
-                                        "example": 12999.99
-                                    },
-                                    "cantidad": {
-                                        "type": "integer",
-                                        "example": 25
-                                    },
-                                    "categoria": {
-                                        "type": "string",
-                                        "example": "Electrónica"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
+                "operationId": "594a90b2572d43e34f36639c0479e5e8",
                 "responses": {
                     "201": {
-                        "description": "Producto creado"
+                        "description": "Producto creado exitosamente"
                     },
                     "400": {
                         "description": "Datos no válidos"
                     },
-                    "401": {
-                        "description": "No autenticado"
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/productos/{id}": {
@@ -439,129 +527,119 @@
                     "Productos"
                 ],
                 "summary": "Mostrar producto",
-                "description": "Obtiene la información de un producto específico",
-                "operationId": "1e9d331589a70da22515345862342e85",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "operationId": "12501b97a5b500a79dce1fd797f7ee15",
                 "responses": {
                     "200": {
-                        "description": "Producto encontrado"
-                    },
-                    "401": {
-                        "description": "No autenticado"
+                        "description": "Producto obtenido exitosamente"
                     },
                     "404": {
                         "description": "Producto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
                     "Productos"
                 ],
                 "summary": "Actualizar producto",
-                "description": "Actualiza la información de un producto existente",
-                "operationId": "8a70fd002421132df33fd17c28ae7e8c",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "nombre": {
-                                        "type": "string",
-                                        "example": "Laptop Dell Actualizada"
-                                    },
-                                    "precio": {
-                                        "type": "number",
-                                        "example": 13999.99
-                                    },
-                                    "cantidad": {
-                                        "type": "integer",
-                                        "example": 30
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
+                "operationId": "4b1f3946bb2f3ff150174a34df5ccbba",
                 "responses": {
                     "200": {
-                        "description": "Producto actualizado"
+                        "description": "Producto actualizado exitosamente"
                     },
                     "400": {
                         "description": "Datos no válidos"
                     },
-                    "401": {
-                        "description": "No autenticado"
-                    },
                     "404": {
                         "description": "Producto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
                     "Productos"
                 ],
                 "summary": "Eliminar producto",
-                "description": "Elimina un producto del inventario",
-                "operationId": "26bc7d58b5a6016e79463c9aa740b4a0",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "operationId": "4597a0081d236e8172f1d92982ec137f",
                 "responses": {
                     "200": {
-                        "description": "Producto eliminado"
+                        "description": "Producto eliminado exitosamente"
                     },
-                    "401": {
-                        "description": "No autenticado"
+                    "404": {
+                        "description": "Producto no encontrado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                }
+            }
+        },
+        "/productos/{id}/cambiar-estado": {
+            "patch": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Cambiar estado del producto",
+                "operationId": "a49e496949da8acabcd072a43c52f843",
+                "responses": {
+                    "200": {
+                        "description": "Estado del producto actualizado"
                     },
                     "404": {
                         "description": "Producto no encontrado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
+                }
+            }
+        },
+        "/productos/buscar": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Buscar productos por nombre",
+                "operationId": "09f935ed0b019185a7be4441cf4da2a1",
+                "responses": {
+                    "200": {
+                        "description": "Productos encontrados"
                     }
-                ]
+                }
+            }
+        },
+        "/productos/disponibles": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Listar productos disponibles",
+                "operationId": "3e30a13948c181e9f69504ba777f3adb",
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos activos"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                }
+            }
+        },
+        "/productos/ordenar": {
+            "get": {
+                "tags": [
+                    "Productos"
+                ],
+                "summary": "Ordenar productos por precio",
+                "operationId": "d3747d04131dc3e907735f8dbc99da01",
+                "responses": {
+                    "200": {
+                        "description": "Productos ordenados"
+                    }
+                }
             }
         },
         "/proveedores": {
@@ -570,52 +648,101 @@
                     "Proveedores"
                 ],
                 "summary": "Listar proveedores",
-                "operationId": "1abb63a6091767636a24c7e1f02af10a",
+                "description": "Obtiene la lista de todos los proveedores registrados",
+                "operationId": "65141580cedf8c50d3aec0d6eb5175e1",
                 "responses": {
                     "200": {
-                        "description": "Lista de proveedores"
+                        "description": "Lista de proveedores obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Proveedor ABC"
+                                                    },
+                                                    "direccion": {
+                                                        "type": "string",
+                                                        "example": "Calle 123 #45-67"
+                                                    },
+                                                    "telefono": {
+                                                        "type": "string",
+                                                        "example": "3001234567"
+                                                    },
+                                                    "estado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No hay proveedores registrados"
                     },
                     "401": {
                         "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "Proveedores"
                 ],
                 "summary": "Crear proveedor",
-                "operationId": "e568e4451d58109affdf9f5eba4e2a0c",
+                "description": "Crea un nuevo proveedor en el sistema",
+                "operationId": "dd122260652971026fd230b43ba468dd",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "nombre",
+                                    "direccion",
+                                    "telefono",
+                                    "estado"
+                                ],
                                 "properties": {
                                     "nombre": {
                                         "type": "string",
-                                        "example": "Distribuidora Tech"
-                                    },
-                                    "correo": {
-                                        "type": "string",
-                                        "example": "ventas@tech.com"
-                                    },
-                                    "telefono": {
-                                        "type": "string",
-                                        "example": "555-9876"
+                                        "maxLength": 255,
+                                        "example": "Proveedor ABC"
                                     },
                                     "direccion": {
                                         "type": "string",
-                                        "example": "Calle Industria 456"
+                                        "maxLength": 200,
+                                        "example": "Calle 123 #45-67"
+                                    },
+                                    "telefono": {
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "example": "3001234567"
                                     },
                                     "estado": {
-                                        "type": "string",
-                                        "example": "activo"
+                                        "type": "boolean",
+                                        "example": true
                                     }
                                 },
                                 "type": "object"
@@ -625,17 +752,80 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Proveedor creado"
+                        "description": "Proveedor creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Proveedor creado exitosamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Proveedor ABC"
+                                                },
+                                                "direccion": {
+                                                    "type": "string",
+                                                    "example": "Calle 123 #45-67"
+                                                },
+                                                "telefono": {
+                                                    "type": "string",
+                                                    "example": "3001234567"
+                                                },
+                                                "estado": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos invalidos"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/proveedores/{id}": {
@@ -644,90 +834,581 @@
                     "Proveedores"
                 ],
                 "summary": "Mostrar proveedor",
-                "operationId": "f0842cb3e8ea3ece0726a1256148fecd",
+                "description": "Obtiene la información de un proveedor específico por su ID",
+                "operationId": "2592c1d6632cd9515b8b2a711f699718",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID del proveedor",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 27
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Proveedor encontrado"
+                        "description": "Proveedor encontrado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 27
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Proveedor ABC"
+                                                },
+                                                "direccion": {
+                                                    "type": "string",
+                                                    "example": "Calle 123 #45-67"
+                                                },
+                                                "telefono": {
+                                                    "type": "string",
+                                                    "example": "3001234567"
+                                                },
+                                                "estado": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-01-27T10:00:00.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-01-27T10:00:00.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Proveedor no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Proveedor no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener el proveedor"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
                     "Proveedores"
                 ],
                 "summary": "Actualizar proveedor",
-                "operationId": "8d9687fc325be404b71cf0bd676fed40",
+                "description": "Actualiza la información de un proveedor existente",
+                "operationId": "070d94e5425179b8b3b3cef6b12f7aed",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID del proveedor a actualizar",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Proveedor XYZ"
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Carrera 10 #20-30"
+                                    },
+                                    "telefono": {
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "example": "3101112233"
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Proveedor actualizado"
+                        "description": "Proveedor actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Proveedor actualizado exitosamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Proveedor XYZ"
+                                                },
+                                                "direccion": {
+                                                    "type": "string",
+                                                    "example": "Carrera 10 #20-30"
+                                                },
+                                                "telefono": {
+                                                    "type": "string",
+                                                    "example": "3101112233"
+                                                },
+                                                "estado": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Proveedor no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Proveedor no ha sido encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos invalidos"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al actualizar el proveedor"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
                     "Proveedores"
                 ],
                 "summary": "Eliminar proveedor",
-                "operationId": "676447ece60527de56d59d2274c3e366",
+                "description": "Elimina un proveedor del sistema",
+                "operationId": "1d9aa6578c124482c9acc9eda2c1a06e",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID del proveedor a eliminar",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Proveedor eliminado"
+                        "description": "Proveedor eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El proveedor se ha eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Proveedor no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Proveedor no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                }
+            }
+        },
+        "/proveedores/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Cambiar estado del proveedor",
+                "description": "Cambia el estado activo/inactivo de un proveedor (alterna el valor booleano)",
+                "operationId": "d78cb6351098a51f57383ab614eb7255",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Estado del proveedor ha sido actualizado"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Proveedor ABC"
+                                                },
+                                                "estado": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Proveedor no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Proveedor no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al cambiar el estado del proveedor"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
+                }
+            }
+        },
+        "/proveedores/buscar": {
+            "get": {
+                "tags": [
+                    "Proveedores"
+                ],
+                "summary": "Buscar proveedores por nombre",
+                "description": "Busca proveedores cuyo nombre coincida parcialmente con el término de búsqueda",
+                "operationId": "ab080e4a48822ba62653339e9f079649",
+                "parameters": [
                     {
-                        "bearerAuth": []
+                        "name": "nombre",
+                        "in": "query",
+                        "description": "Término de búsqueda para el nombre del proveedor",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ABC"
+                        }
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Resultados de búsqueda encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Proveedor ABC"
+                                                    },
+                                                    "direccion": {
+                                                        "type": "string",
+                                                        "example": "Calle 123 #45-67"
+                                                    },
+                                                    "telefono": {
+                                                        "type": "string",
+                                                        "example": "3001234567"
+                                                    },
+                                                    "estado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parámetros inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El parámetro nombre es requerido"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sin resultados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontraron proveedores con ese nombre"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                }
             }
         },
         "/proveedores/activos": {
@@ -736,17 +1417,80 @@
                     "Proveedores"
                 ],
                 "summary": "Listar proveedores activos",
-                "operationId": "76a23da96715680101e4851c44239f0c",
+                "description": "Obtiene la lista de todos los proveedores con estado activo (estado = true)",
+                "operationId": "621ddfcf7d627dbf7d0910c7fcb7b39c",
                 "responses": {
                     "200": {
-                        "description": "Lista de proveedores activos"
+                        "description": "Lista de proveedores activos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Proveedor ABC"
+                                                    },
+                                                    "direccion": {
+                                                        "type": "string",
+                                                        "example": "Calle 123 #45-67"
+                                                    },
+                                                    "telefono": {
+                                                        "type": "string",
+                                                        "example": "3001234567"
+                                                    },
+                                                    "estado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No hay proveedores activos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No hay proveedores activos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/register": {
@@ -757,7 +1501,7 @@
                 ],
                 "summary": "Registrar usuario",
                 "description": "Crea un nuevo usuario en el sistema. No requiere autenticación.",
-                "operationId": "9215e52283cc1c836291610a4ad4696a",
+                "operationId": "be2d3a801cdbd39e39fb0a823ebd79ef",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -788,7 +1532,7 @@
                 ],
                 "summary": "Iniciar sesión",
                 "description": "Autentica un usuario y devuelve un token Bearer para usar en endpoints protegidos. No requiere autenticación previa.",
-                "operationId": "ce4aa149248705ca5e58611770a40b3f",
+                "operationId": "18a5bd6937120535896408a8187120ee",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -823,7 +1567,7 @@
                 ],
                 "summary": "Usuario autenticado actual",
                 "description": "Obtiene la información del usuario actualmente autenticado. Requiere token Bearer.",
-                "operationId": "87d3834984a8af54bbe43604f620118e",
+                "operationId": "c88e7f30ef8f7d08b78fe94b3b10520d",
                 "responses": {
                     "200": {
                         "description": "Usuario autenticado obtenido exitosamente"
@@ -834,12 +1578,7 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/logout": {
@@ -849,7 +1588,7 @@
                 ],
                 "summary": "Cerrar sesión",
                 "description": "Revoca todos los tokens de acceso del usuario autenticado. Requiere token Bearer.",
-                "operationId": "837f78eed3ff70fcec54ecdf9882bc41",
+                "operationId": "33483a049dcc66aecf43d981dba2ca37",
                 "responses": {
                     "200": {
                         "description": "Sesión cerrada exitosamente"
@@ -860,12 +1599,7 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/usuarios": {
@@ -875,7 +1609,7 @@
                 ],
                 "summary": "Listar usuarios",
                 "description": "Obtiene la lista de todos los usuarios del sistema. Requiere autenticación.",
-                "operationId": "b403164d1659ec1a94a9bc9c0e2f73b0",
+                "operationId": "44325a49a254ac7fe17f28fea21d44af",
                 "responses": {
                     "200": {
                         "description": "Lista de usuarios obtenida exitosamente"
@@ -886,12 +1620,7 @@
                     "404": {
                         "description": "No se encontraron usuarios"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
@@ -899,7 +1628,7 @@
                 ],
                 "summary": "Crear usuario",
                 "description": "Crea un nuevo usuario en el sistema. Requiere autenticación.",
-                "operationId": "1aa39407c083873f80525f9d740a0f43",
+                "operationId": "8e00e0d2672890e65b4ac8bb9d130d9f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -940,12 +1669,7 @@
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/usuarios/{id}": {
@@ -955,7 +1679,7 @@
                 ],
                 "summary": "Mostrar usuario",
                 "description": "Obtiene la información de un usuario específico. Requiere autenticación.",
-                "operationId": "ef01915ffc1e463bb9fb8e1226cc8752",
+                "operationId": "da5d929b09660083bf5056143931569a",
                 "parameters": [
                     {
                         "name": "id",
@@ -976,12 +1700,7 @@
                     "404": {
                         "description": "Usuario no encontrado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
@@ -989,7 +1708,7 @@
                 ],
                 "summary": "Actualizar usuario",
                 "description": "Actualiza la información de un usuario existente. Requiere autenticación.",
-                "operationId": "40400827b1941f11defe45d1ba05b83b",
+                "operationId": "3215c1bfdc8bb171e2d0ca58515add9f",
                 "parameters": [
                     {
                         "name": "id",
@@ -1038,12 +1757,7 @@
                     "404": {
                         "description": "Usuario no encontrado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
@@ -1051,7 +1765,7 @@
                 ],
                 "summary": "Eliminar usuario",
                 "description": "Elimina un usuario del sistema. Requiere autenticación.",
-                "operationId": "1ce7e87f8e2ec8dd8bf503eff350a8ad",
+                "operationId": "2a7948132f94edce863671b82016dcaf",
                 "parameters": [
                     {
                         "name": "id",
@@ -1072,12 +1786,7 @@
                     "404": {
                         "description": "Usuario no encontrado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/ventas": {
@@ -1086,48 +1795,107 @@
                     "Ventas"
                 ],
                 "summary": "Listar ventas",
-                "description": "Obtiene la lista de todas las ventas",
-                "operationId": "d48290aa12cc8ae059010ed4a55d6ad5",
+                "description": "Obtiene la lista de todas las ventas con sus detalles completos (cliente y productos). Incluye filtros opcionales por fecha.",
+                "operationId": "913c2412f710db3f9cd52cce1d00a364",
+                "parameters": [
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Fecha de inicio para filtrar ventas",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Fecha de fin para filtrar ventas",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "por_pagina",
+                        "in": "query",
+                        "description": "Número de resultados por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Lista de ventas"
+                        "description": "Lista de ventas con detalles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "description": "Datos paginados con ventas que incluyen cliente y detalles de productos",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontraron ventas"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "Ventas"
                 ],
                 "summary": "Crear venta",
-                "description": "Registra una nueva venta",
-                "operationId": "4041d0347b43ccd7392f0cd25c39d683",
+                "description": "Registra una nueva venta con sus detalles de productos. Actualiza automáticamente el stock de los productos vendidos.",
+                "operationId": "998b328b4fdc69575e06ec30511368a4",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "id_cliente",
+                                    "detalles"
+                                ],
                                 "properties": {
                                     "id_cliente": {
+                                        "description": "ID del cliente que realiza la compra",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "detalles": {
+                                        "description": "Array de detalles de venta. Cada detalle incluye el producto y la cantidad vendida.",
                                         "type": "array",
                                         "items": {
+                                            "required": [
+                                                "id_producto",
+                                                "cantidad"
+                                            ],
                                             "properties": {
                                                 "id_producto": {
+                                                    "description": "ID del producto a vender",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "cantidad": {
+                                                    "description": "Cantidad del producto a vender (mínimo 1)",
                                                     "type": "integer",
                                                     "example": 2
                                                 }
@@ -1143,17 +1911,35 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Venta creada"
+                        "description": "Venta creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Venta creada exitosamente"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Venta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos o stock insuficiente"
                     },
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/ventas/{id}": {
@@ -1162,11 +1948,13 @@
                     "Ventas"
                 ],
                 "summary": "Mostrar venta",
-                "operationId": "7b3fafcce1667fb94849232e15f8877f",
+                "description": "Obtiene los detalles completos de una venta específica, incluyendo información del cliente y todos los productos vendidos con sus cantidades y precios.",
+                "operationId": "4f3e06d2135b2297bff7236e991f6aca",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID de la venta a consultar",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1175,17 +1963,198 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Venta encontrada"
+                        "description": "Venta encontrada con detalles completos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Venta obtenida exitosamente"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Venta"
+                                        },
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Venta no encontrada"
                     },
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
+                }
+            },
+            "put": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Actualizar venta",
+                "description": "Actualiza una venta existente. Puedes actualizar solo el cliente, solo los productos, o ambos. IMPORTANTE: Si envías 'detalles', se REEMPLAZAN TODOS los productos anteriores. Los campos son opcionales, pero debes enviar al menos uno.",
+                "operationId": "e4e28956e019aec0a34de635e2a8d42b",
+                "parameters": [
                     {
-                        "bearerAuth": []
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la venta a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
-                ]
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_cliente": {
+                                        "description": "ID del cliente (OPCIONAL - solo si quieres cambiar el cliente)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "detalles": {
+                                        "description": "Array de productos. Si envías esto, REEMPLAZA todos los productos anteriores. Cada producto debe tener id_producto y cantidad.",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "id_producto",
+                                                "cantidad"
+                                            ],
+                                            "properties": {
+                                                "id_producto": {
+                                                    "description": "ID del producto a vender",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cantidad": {
+                                                    "description": "Cantidad del producto (mínimo 1)",
+                                                    "type": "integer",
+                                                    "example": 4
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "example": [
+                                            {
+                                                "id_producto": 1,
+                                                "cantidad": 4
+                                            },
+                                            {
+                                                "id_producto": 2,
+                                                "cantidad": 2
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "example": {
+                                "id_cliente": 1,
+                                "detalles": [
+                                    {
+                                        "id_producto": 1,
+                                        "cantidad": 4
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Venta actualizada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Venta actualizada exitosamente"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Venta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos o stock insuficiente"
+                    },
+                    "404": {
+                        "description": "Venta no encontrada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Ventas"
+                ],
+                "summary": "Eliminar venta",
+                "description": "Elimina una venta y restaura el stock de todos los productos asociados en los detalles de la venta",
+                "operationId": "e50dcbcb459b8ff3ca25cc2382f07ca1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la venta a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venta eliminada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Venta eliminada exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Venta no encontrada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                }
             }
         },
         "/ventas/historial": {
@@ -1194,8 +2163,37 @@
                     "Ventas"
                 ],
                 "summary": "Historial de ventas",
-                "description": "Obtiene el historial completo de ventas",
-                "operationId": "ed66c63a4ccd8a297e81e253361316ac",
+                "description": "Obtiene el historial completo de ventas con filtros opcionales",
+                "operationId": "c27b9c1acde8debec44f68069ae3c27c",
+                "parameters": [
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "por_pagina",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Historial de ventas"
@@ -1203,12 +2201,7 @@
                     "401": {
                         "description": "No autenticado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         }
     },
@@ -1289,8 +2282,27 @@
                         "nullable": true
                     },
                     "estado": {
-                        "type": "boolean",
-                        "example": true
+                        "type": "string",
+                        "enum": [
+                            "disponible",
+                            "agotado",
+                            "expirado"
+                        ],
+                        "example": "disponible"
+                    },
+                    "fecha_creacion": {
+                        "description": "Fecha de creación en formato dd/mm/AAAA",
+                        "type": "string",
+                        "format": "date",
+                        "example": "15/01/2024",
+                        "nullable": true
+                    },
+                    "fecha_actualizacion": {
+                        "description": "Fecha de actualización en formato dd/mm/AAAA",
+                        "type": "string",
+                        "format": "date",
+                        "example": "15/01/2024",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -1327,7 +2339,7 @@
             "LoginRequest": {
                 "required": [
                     "correo",
-                    "password"
+                    "contraseña"
                 ],
                 "properties": {
                     "correo": {
@@ -1335,7 +2347,7 @@
                         "format": "email",
                         "example": "admin@sistema.com"
                     },
-                    "password": {
+                    "contraseña": {
                         "type": "string",
                         "format": "password",
                         "example": "Admin2024!"
@@ -1409,9 +2421,10 @@
                         "example": 1
                     },
                     "fecha_venta": {
+                        "description": "Fecha de venta en formato dd/mm/AAAA",
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2024-01-15 10:30:00"
+                        "format": "date",
+                        "example": "15/01/2024"
                     },
                     "total": {
                         "type": "number",
@@ -1474,9 +2487,10 @@
                         "example": "F-000001"
                     },
                     "fecha": {
+                        "description": "Fecha de factura en formato dd/mm/AAAA",
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2024-01-15 10:30:00"
+                        "format": "date",
+                        "example": "15/01/2024"
                     },
                     "total": {
                         "type": "number",
@@ -1487,23 +2501,36 @@
                         "type": "integer",
                         "example": 1
                     },
+                    "proveedor_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
                     "estado": {
-                        "type": "boolean",
-                        "example": true
+                        "type": "string",
+                        "enum": [
+                            "pendiente",
+                            "disponible",
+                            "agotado"
+                        ],
+                        "example": "pendiente"
                     },
                     "cliente": {
                         "$ref": "#/components/schemas/Cliente"
+                    },
+                    "proveedor": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Proveedor"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "detalles": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/DetalleFactura"
                         }
-                    },
-                    "pdf_path": {
-                        "type": "string",
-                        "example": "storage/facturas/factura_001.pdf",
-                        "nullable": true
                     }
                 },
                 "type": "object"

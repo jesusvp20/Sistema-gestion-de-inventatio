@@ -3,30 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\productosModel;
+use App\Services\ProductoService;
 use Illuminate\Http\Request;
-use OpenApi\Attributes as OA;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class productosController extends Controller
 {
-    #[OA\Get(
-        path: "/productos",
-        tags: ["Productos"],
-        summary: "Listar productos",
-        description: "Obtiene una lista de todos los productos"
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Lista de productos obtenida exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Producto")),
-                new OA\Property(property: "statusCode", type: "integer", example: 200)
-            ]
-        )
-    )]
-    #[OA\Response(response: 500, description: "Error del servidor")]
+    protected $productoService;
+
+    public function __construct(ProductoService $productoService)
+    {
+        $this->productoService = $productoService;
+    }
+
     public function index()
     {
         try {
@@ -41,10 +31,14 @@ class productosController extends Controller
                 ], 200);
             }
             
+            // MODIFICADO: 2025-11-19 - Formatear fechas
+            $productosArray = $productos->toArray();
+            $this->formatearFechasEnArray($productosArray);
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Productos obtenidos exitosamente',
-                'data' => $productos,
+                'data' => $productosArray,
                 'statusCode' => 200
             ], 200);
         } catch (\Exception $e) {
@@ -57,46 +51,19 @@ class productosController extends Controller
         }
     }
 
-    #[OA\Post(
-        path: "/productos",
-        tags: ["Productos"],
-        summary: "Crear producto",
-        description: "Crea un nuevo producto en el inventario",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ["nombre", "precio", "cantidad_disponible", "estado"],
-                properties: [
-                    new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
-                    new OA\Property(property: "nombre", type: "string", example: "Laptop Dell"),
-                    new OA\Property(property: "descripcion", type: "string", example: "Laptop 15 pulgadas", nullable: true),
-                    new OA\Property(property: "precio", type: "number", format: "float", example: 12999.99),
-                    new OA\Property(property: "cantidad_disponible", type: "integer", example: 25),
-                    new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
-                    new OA\Property(property: "proveedor", type: "integer", nullable: true),
-                    new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
-                ]
-            )
-        )
-    )]
-    #[OA\Response(
-        response: 201,
-        description: "Producto creado exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "message", type: "string", example: "Producto creado exitosamente"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Producto"),
-                new OA\Property(property: "statusCode", type: "integer", example: 201)
-            ]
-        )
-    )]
-    #[OA\Response(response: 400, description: "Datos no válidos")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Convertir estado a string si viene como boolean
+            $requestData = $request->all();
+            if (isset($requestData['estado']) && is_bool($requestData['estado'])) {
+                $requestData['estado'] = $requestData['estado'] ? 'disponible' : 'agotado';
+            }
+            if (isset($requestData['estado']) && !is_string($requestData['estado'])) {
+                $requestData['estado'] = (string) $requestData['estado'];
+            }
+            
+            $validator = Validator::make($requestData, [
                 'nombre' => 'required|string|max:255',
                 'descripcion' => 'nullable|string',
                 'precio' => 'required|numeric|min:0',
@@ -122,8 +89,8 @@ class productosController extends Controller
                 'codigoProducto.max' => 'El código no puede exceder 255 caracteres',
                 'codigoProducto.unique' => 'Este código de producto ya existe',
                 'estado.required' => 'El estado es obligatorio',
-                'estado.string' => 'El estado debe ser un texto',
-                'estado.in' => 'El estado debe ser: disponible, agotado o expirado'
+                'estado.string' => 'El estado debe ser un texto (disponible, agotado o expirado). No se acepta true/false.',
+                'estado.in' => 'El estado debe ser uno de estos valores: disponible, agotado o expirado'
             ]);
 
             if ($validator->fails()) {
@@ -135,11 +102,17 @@ class productosController extends Controller
                 ], 400);
             }
 
-            $producto = productosModel::create($request->all());
+            $producto = productosModel::create($requestData);
+            
+            // MODIFICADO: 2025-11-19 - Formatear fechas
+            $producto = $this->productoService->formatearFechasProducto($producto);
+            $productoArray = $producto->toArray();
+            $this->formatearFechasEnArray($productoArray);
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Producto creado exitosamente',
-                'data' => $producto,
+                'data' => $productoArray,
                 'statusCode' => 201
             ], 201);
         } catch (\Exception $e) {
@@ -151,24 +124,6 @@ class productosController extends Controller
         }
     }
 
-    #[OA\Get(
-        path: "/productos/{id}",
-        tags: ["Productos"],
-        summary: "Mostrar producto",
-        description: "Obtiene la información de un producto específico",
-        parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Producto obtenido exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Producto")
-            ]
-        )
-    )]
-    #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function show($id)
     {
         try {
@@ -182,10 +137,15 @@ class productosController extends Controller
                 ], 404);
             }
             
+            // MODIFICADO: 2025-11-19 - Formatear fechas
+            $producto = $this->productoService->formatearFechasProducto($producto);
+            $productoArray = $producto->toArray();
+            $this->formatearFechasEnArray($productoArray);
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Producto obtenido exitosamente',
-                'data' => $producto,
+                'data' => $productoArray,
                 'statusCode' => 200
             ], 200);
         } catch (\Exception $e) {
@@ -198,40 +158,6 @@ class productosController extends Controller
         }
     }
 
-    #[OA\Put(
-        path: "/productos/{id}",
-        tags: ["Productos"],
-        summary: "Actualizar producto",
-        description: "Actualiza la información de un producto existente",
-        parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: "codigoProducto", type: "string", example: "PROD-001", nullable: true),
-                    new OA\Property(property: "nombre", type: "string", example: "Laptop Dell"),
-                    new OA\Property(property: "descripcion", type: "string", example: "Laptop 15 pulgadas", nullable: true),
-                    new OA\Property(property: "precio", type: "number", format: "float", example: 12999.99),
-                    new OA\Property(property: "cantidad_disponible", type: "integer", example: 25),
-                    new OA\Property(property: "categoria", type: "string", example: "Electrónica", nullable: true),
-                    new OA\Property(property: "proveedor", type: "integer", nullable: true),
-                    new OA\Property(property: "estado", type: "string", enum: ["disponible", "agotado", "expirado"], example: "disponible")
-                ]
-            )
-        )
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Producto actualizado exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "message", type: "string", example: "Producto actualizado exitosamente"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Producto")
-            ]
-        )
-    )]
-    #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function update(Request $request, $id)
     {
         try {
@@ -245,7 +171,16 @@ class productosController extends Controller
                 ], 404);
             }
             
-            $validator = Validator::make($request->all(), [
+            // Convertir estado a string si viene como boolean
+            $requestData = $request->all();
+            if (isset($requestData['estado']) && is_bool($requestData['estado'])) {
+                $requestData['estado'] = $requestData['estado'] ? 'disponible' : 'agotado';
+            }
+            if (isset($requestData['estado']) && !is_string($requestData['estado'])) {
+                $requestData['estado'] = (string) $requestData['estado'];
+            }
+            
+            $validator = Validator::make($requestData, [
                 'nombre' => 'sometimes|string|max:255',
                 'descripcion' => 'nullable|string',
                 'precio' => 'sometimes|numeric|min:0',
@@ -260,8 +195,8 @@ class productosController extends Controller
                 'cantidad_disponible.integer' => 'La cantidad debe ser un número entero',
                 'cantidad_disponible.min' => 'La cantidad no puede ser negativa',
                 'codigoProducto.unique' => 'Este código de producto ya existe',
-                'estado.string' => 'El estado debe ser un texto',
-                'estado.in' => 'El estado debe ser: disponible, agotado o expirado'
+                'estado.string' => 'El estado debe ser un texto (disponible, agotado o expirado). No se acepta true/false.',
+                'estado.in' => 'El estado debe ser uno de estos valores: disponible, agotado o expirado'
             ]);
             
             if ($validator->fails()) {
@@ -273,12 +208,18 @@ class productosController extends Controller
                 ], 400);
             }
             
-            $producto->update($request->all());
+            $producto->update($requestData);
+            
+            // MODIFICADO: 2025-11-19 - Formatear fechas
+            $producto = $producto->fresh();
+            $producto = $this->productoService->formatearFechasProducto($producto);
+            $productoArray = $producto->toArray();
+            $this->formatearFechasEnArray($productoArray);
             
             return response()->json([
                 'status' => 'success',
                 'message' => 'Producto actualizado exitosamente',
-                'data' => $producto->fresh(),
+                'data' => $productoArray,
                 'statusCode' => 200
             ], 200);
         } catch (\Exception $e) {
@@ -291,24 +232,6 @@ class productosController extends Controller
         }
     }
 
-    #[OA\Delete(
-        path: "/productos/{id}",
-        tags: ["Productos"],
-        summary: "Eliminar producto",
-        description: "Elimina un producto del inventario",
-        parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Producto eliminado exitosamente",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "message", type: "string", example: "El producto se ha eliminado correctamente")
-            ]
-        )
-    )]
-    #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function destroy($id)
     {
         try {
@@ -340,24 +263,6 @@ class productosController extends Controller
         }
     }
 
-    #[OA\Patch(
-        path: "/productos/{id}/cambiar-estado",
-        tags: ["Productos"],
-        summary: "Cambiar estado del producto",
-        description: "Alterna el estado (activo/inactivo) de un producto",
-        parameters: [new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Estado del producto actualizado",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", ref: "#/components/schemas/Producto")
-            ]
-        )
-    )]
-    #[OA\Response(response: 404, description: "Producto no encontrado")]
     public function cambiarEstado($id)
     {
         $producto = productosModel::find($id);
@@ -374,82 +279,90 @@ class productosController extends Controller
             $producto->estado = 'disponible';
         }
         $producto->save();
-        return response()->json(['status' => 'success', 'data' => $producto]);
+        
+        // MODIFICADO: 2025-11-19 - Formatear fechas
+        $producto = $this->productoService->formatearFechasProducto($producto);
+        $productoArray = $producto->toArray();
+        $this->formatearFechasEnArray($productoArray);
+        
+        return response()->json(['status' => 'success', 'data' => $productoArray]);
     }
 
-    #[OA\Get(
-        path: "/productos/buscar",
-        tags: ["Productos"],
-        summary: "Buscar productos por nombre",
-        description: "Busca productos por nombre (búsqueda parcial)",
-        parameters: [new OA\Parameter(name: "nombre", in: "query", required: true, schema: new OA\Schema(type: "string"))]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Productos encontrados",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Producto"))
-            ]
-        )
-    )]
     public function buscar(Request $request)
     {
         $nombre = $request->input('nombre');
         $productos = productosModel::where('nombre', 'like', "%{$nombre}%")->get();
-        return response()->json(['status' => 'success', 'data' => $productos]);
+        
+        // MODIFICADO: 2025-11-19 - Formatear fechas
+        $productosArray = $productos->toArray();
+        $this->formatearFechasEnArray($productosArray);
+        
+        return response()->json(['status' => 'success', 'data' => $productosArray]);
     }
 
-    #[OA\Get(
-        path: "/productos/activos",
-        tags: ["Productos"],
-        summary: "Listar productos activos",
-        description: "Obtiene una lista de todos los productos con estado activo"
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Lista de productos activos",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Producto"))
-            ]
-        )
-    )]
-    public function activos()
+    public function disponibles()
     {
-        $productos = productosModel::where('estado', 'disponible')->get();
-        return response()->json(['status' => 'success', 'data' => $productos]);
+        try {
+            $productos = productosModel::where('estado', 'disponible')->get();
+            
+            if ($productos->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No hay productos disponibles en el inventario',
+                    'data' => [],
+                    'statusCode' => 200
+                ], 200);
+            }
+            
+            // MODIFICADO: 2025-11-19 - Formatear fechas
+            $productosArray = $productos->toArray();
+            $this->formatearFechasEnArray($productosArray);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Productos disponibles obtenidos exitosamente',
+                'data' => $productosArray,
+                'statusCode' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al listar productos activos: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener productos disponibles',
+                'statusCode' => 500
+            ], 500);
+        }
     }
 
-    #[OA\Get(
-        path: "/productos/ordenar",
-        tags: ["Productos"],
-        summary: "Ordenar productos por precio",
-        description: "Obtiene productos ordenados por precio",
-        parameters: [new OA\Parameter(
-            name: "orden",
-            in: "query",
-            required: false,
-            description: "Orden ascendente o descendente",
-            schema: new OA\Schema(type: "string", enum: ["asc","desc"], default: "asc")
-        )]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: "Productos ordenados",
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: "status", type: "string", example: "success"),
-                new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Producto"))
-            ]
-        )
-    )]
     public function ordenar(Request $request)
     {
         $orden = $request->input('orden', 'asc');
         $productos = productosModel::orderBy('precio', $orden)->get();
-        return response()->json(['status' => 'success', 'data' => $productos]);
+        
+        // MODIFICADO: 2025-11-19 - Formatear fechas
+        $productosArray = $productos->toArray();
+        $this->formatearFechasEnArray($productosArray);
+        
+        return response()->json(['status' => 'success', 'data' => $productosArray]);
+    }
+
+    /**
+     * Formatea fechas en array usando Carbon directamente
+     */
+    protected function formatearFechasEnArray(&$data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => &$value) {
+                if (is_array($value)) {
+                    $this->formatearFechasEnArray($value);
+                } elseif (in_array($key, ['fecha', 'fecha_creacion', 'fecha_actualizacion', 'fecha_venta']) && $value) {
+                    try {
+                        $value = Carbon::parse($value)->format('d/m/Y');
+                    } catch (\Exception $e) {
+                        // Si falla, dejar el valor original
+                    }
+                }
+            }
+        }
     }
 }

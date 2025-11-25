@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\documentacion;
 
 use OpenApi\Attributes as OA;
 
@@ -14,7 +14,6 @@ class ClientesDocs
         tags: ["Clientes"],
         summary: "Listar clientes",
         description: "Obtiene la lista de todos los clientes",
-        security: [["bearerAuth" => []]]
     )]
     #[OA\Response(response: 200, description: "Lista de clientes")]
     #[OA\Response(response: 401, description: "No autenticado")]
@@ -25,16 +24,24 @@ class ClientesDocs
         tags: ["Clientes"],
         summary: "Crear cliente",
         description: "Crea un nuevo cliente",
-        security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
+                required: ["nombre", "email", "identificacion", "telefono"],
                 properties: [
                     new OA\Property(property: "nombre", type: "string", example: "Juan Pérez"),
-                    new OA\Property(property: "correo", type: "string", example: "juan@email.com"),
+                    new OA\Property(property: "email", type: "string", format: "email", example: "juan@email.com", description: "Correo electrónico (también acepta 'correo')"),
+                    new OA\Property(property: "correo", type: "string", format: "email", example: "juan@email.com", nullable: true, description: "Alias de 'email'"),
+                    new OA\Property(property: "identificacion", type: "string", example: "123456789", description: "Número de identificación del cliente (requerido y único)"),
                     new OA\Property(property: "telefono", type: "string", example: "555-0123"),
-                    new OA\Property(property: "direccion", type: "string", example: "Av. Principal 123"),
-                    new OA\Property(property: "estado", type: "string", example: "activo")
+                    new OA\Property(property: "estado", type: "boolean", example: true, description: "Estado: true/false o 'activo'/'inactivo'")
+                ],
+                example: [
+                    "nombre" => "Juan Pérez",
+                    "correo" => "juan@email.com",
+                    "identificacion" => "123456789",
+                    "telefono" => "555-0123",
+                    "estado" => "activo"
                 ]
             )
         )
@@ -47,7 +54,6 @@ class ClientesDocs
         path: "/clientes/{id}",
         tags: ["Clientes"],
         summary: "Mostrar cliente",
-        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ]
@@ -61,7 +67,6 @@ class ClientesDocs
         path: "/clientes/{id}",
         tags: ["Clientes"],
         summary: "Actualizar cliente",
-        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
@@ -83,7 +88,6 @@ class ClientesDocs
         path: "/clientes/{id}",
         tags: ["Clientes"],
         summary: "Eliminar cliente",
-        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ]
@@ -96,7 +100,6 @@ class ClientesDocs
         path: "/clientes/activos",
         tags: ["Clientes"],
         summary: "Listar clientes activos",
-        security: [["bearerAuth" => []]]
     )]
     #[OA\Response(response: 200, description: "Lista de clientes activos")]
     public function clientes_activos() {}

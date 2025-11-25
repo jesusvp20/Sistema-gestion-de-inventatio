@@ -120,11 +120,11 @@ public function puede_eliminar_un_usuario(){
     public function puede_iniciar_sesion(){
         $usuario = usuariosModel::factory()->create([
             'correo' => 'correo@ejemplo.com',
-            'contraseña' => 'password123',
+            'contraseña' => \Illuminate\Support\Facades\Hash::make('password123'),
         ]);
 
         $loginData = [
-            'correo' => 'cprreo@ejemplo.com',
+            'correo' => 'correo@ejemplo.com',
             'contraseña' => 'password123',
         ];
             
@@ -135,7 +135,7 @@ public function puede_eliminar_un_usuario(){
                 'status' => 'success',
                 'message' => 'Inicio de sesión exitoso',
             ])
-            ->assertJsonPath('data.correo', 'correo@ejemplo.com', 'data.contraseña', 'password123');
+            ->assertJsonPath('data.usuario.correo', 'correo@ejemplo.com');
 
          
     }

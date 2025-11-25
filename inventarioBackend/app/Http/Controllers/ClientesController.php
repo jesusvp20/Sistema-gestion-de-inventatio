@@ -65,13 +65,21 @@ class ClientesController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["nombre", "email", "identificacion", "telefono", "estado"],
+                required: ["nombre", "email", "identificacion", "telefono"],
                 properties: [
-                    new OA\Property(property: "nombre", type: "string", example: "María García"),
-                    new OA\Property(property: "email", type: "string", format: "email", example: "maria@ejemplo.com"),
-                    new OA\Property(property: "identificacion", type: "string", example: "123456789"),
-                    new OA\Property(property: "telefono", type: "string", example: "+1234567890"),
-                    new OA\Property(property: "estado", type: "boolean", example: true)
+                    new OA\Property(property: "nombre", type: "string", example: "Juan Pérez"),
+                    new OA\Property(property: "email", type: "string", format: "email", example: "juan@email.com", description: "Correo electrónico del cliente (también acepta 'correo')"),
+                    new OA\Property(property: "correo", type: "string", format: "email", example: "juan@email.com", nullable: true, description: "Alias de 'email'"),
+                    new OA\Property(property: "identificacion", type: "string", example: "123456789", description: "Número de identificación del cliente (requerido)"),
+                    new OA\Property(property: "telefono", type: "string", example: "555-0123"),
+                    new OA\Property(property: "estado", type: "boolean", example: true, description: "Estado del cliente: true (activo) o false (inactivo). También acepta strings 'activo'/'inactivo'")
+                ],
+                example: [
+                    "nombre" => "Juan Pérez",
+                    "correo" => "juan@email.com",
+                    "identificacion" => "123456789",
+                    "telefono" => "555-0123",
+                    "estado" => "activo"
                 ]
             )
         )
@@ -92,12 +100,34 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Normalizar datos: convertir 'correo' a 'email' si existe
+            $requestData = $request->all();
+            if (isset($requestData['correo']) && !isset($requestData['email'])) {
+                $requestData['email'] = $requestData['correo'];
+                unset($requestData['correo']);
+            }
+            
+            // Convertir estado de string a boolean si es necesario
+            if (isset($requestData['estado'])) {
+                if (is_string($requestData['estado'])) {
+                    $estadoLower = strtolower($requestData['estado']);
+                    if (in_array($estadoLower, ['activo', 'true', '1', 'yes'])) {
+                        $requestData['estado'] = true;
+                    } elseif (in_array($estadoLower, ['inactivo', 'false', '0', 'no'])) {
+                        $requestData['estado'] = false;
+                    }
+                }
+            } else {
+                // Estado por defecto si no se envía
+                $requestData['estado'] = true;
+            }
+            
+            $validator = Validator::make($requestData, [
                 'nombre' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:clientes',
                 'identificacion' => 'required|string|max:50|unique:clientes',
                 'telefono' => 'required|string|max:100',
-                'estado' => 'required|boolean',
+                'estado' => 'nullable|boolean',
             ], [
                 'nombre.required' => 'El nombre del cliente es obligatorio',
                 'nombre.max' => 'El nombre no puede exceder 255 caracteres',
@@ -107,8 +137,7 @@ class ClientesController extends Controller
                 'identificacion.required' => 'La identificación es obligatoria',
                 'identificacion.unique' => 'Esta identificación ya está registrada',
                 'telefono.required' => 'El teléfono es obligatorio',
-                'estado.required' => 'El estado es obligatorio',
-                'estado.boolean' => 'El estado debe ser verdadero o falso'
+                'estado.boolean' => 'El estado debe ser verdadero/false o activo/inactivo'
             ]);
 
             if ($validator->fails()) {
@@ -120,7 +149,7 @@ class ClientesController extends Controller
                 ], 400);
             }
 
-            $cliente = ClientesModel::create($request->all());
+            $cliente = ClientesModel::create($requestData);
 
             return response()->json([
                 'status' => 'success',
@@ -132,6 +161,78 @@ class ClientesController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    #[OA\Get(
+        path: "/clientes/{id}",
+        summary: "Mostrar cliente",
+        description: "Obtiene la información de un cliente específico",
+        tags: ["Clientes"],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, description: "ID del cliente", schema: new OA\Schema(type: "integer"))
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Cliente obtenido exitosamente",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "status", type: "string", example: "success"),
+                new OA\Property(property: "message", type: "string", example: "Cliente obtenido exitosamente"),
+                new OA\Property(property: "data", ref: "#/components/schemas/Cliente"),
+                new OA\Property(property: "statusCode", type: "integer", example: 200)
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Cliente no encontrado",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "status", type: "string", example: "error"),
+                new OA\Property(property: "message", type: "string", example: "El cliente con ID 1 no fue encontrado"),
+                new OA\Property(property: "statusCode", type: "integer", example: 404)
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Error del servidor",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "status", type: "string", example: "error"),
+                new OA\Property(property: "message", type: "string", example: "Error al obtener el cliente"),
+                new OA\Property(property: "statusCode", type: "integer", example: 500)
+            ]
+        )
+    )]
+    public function show($id)
+    {
+        try {
+            $cliente = ClientesModel::find($id);
+            
+            if (!$cliente) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'El cliente con ID ' . $id . ' no fue encontrado',
+                    'statusCode' => 404
+                ], 404);
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cliente obtenido exitosamente',
+                'data' => $cliente,
+                'statusCode' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al mostrar cliente: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el cliente',
+                'statusCode' => 500
             ], 500);
         }
     }
@@ -149,10 +250,11 @@ class ClientesController extends Controller
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(property: "nombre", type: "string", example: "María García"),
-                    new OA\Property(property: "email", type: "string", format: "email", example: "maria@ejemplo.com"),
+                    new OA\Property(property: "email", type: "string", format: "email", example: "maria@ejemplo.com", description: "Correo electrónico del cliente (también acepta 'correo')"),
+                    new OA\Property(property: "correo", type: "string", format: "email", example: "maria@ejemplo.com", nullable: true, description: "Alias de 'email'"),
                     new OA\Property(property: "identificacion", type: "string", example: "123456789"),
                     new OA\Property(property: "telefono", type: "string", example: "+1234567890"),
-                    new OA\Property(property: "estado", type: "boolean", example: true)
+                    new OA\Property(property: "estado", type: "boolean", example: true, description: "Estado del cliente: true (activo) o false (inactivo). También acepta strings 'activo'/'inactivo'")
                 ]
             )
         )
@@ -182,7 +284,24 @@ class ClientesController extends Controller
                 ], 404);
             }
 
-            $validator = Validator::make($request->all(), [
+            // Normalizar datos: convertir 'correo' a 'email' si existe
+            $requestData = $request->all();
+            if (isset($requestData['correo']) && !isset($requestData['email'])) {
+                $requestData['email'] = $requestData['correo'];
+                unset($requestData['correo']);
+            }
+            
+            // Convertir estado de string a boolean si es necesario
+            if (isset($requestData['estado']) && is_string($requestData['estado'])) {
+                $estadoLower = strtolower($requestData['estado']);
+                if (in_array($estadoLower, ['activo', 'true', '1', 'yes'])) {
+                    $requestData['estado'] = true;
+                } elseif (in_array($estadoLower, ['inactivo', 'false', '0', 'no'])) {
+                    $requestData['estado'] = false;
+                }
+            }
+            
+            $validator = Validator::make($requestData, [
                 'nombre' => 'sometimes|string|max:255',
                 'email' => [
                     'sometimes',
@@ -199,6 +318,8 @@ class ClientesController extends Controller
                 ],
                 'telefono' => 'sometimes|string|max:100',
                 'estado' => 'sometimes|boolean',
+            ], [
+                'estado.boolean' => 'El estado debe ser verdadero/false o activo/inactivo'
             ]);
 
             if ($validator->fails()) {
@@ -210,7 +331,7 @@ class ClientesController extends Controller
                 ], 400);
             }
 
-            $cliente->update($request->all());
+            $cliente->update($requestData);
 
             return response()->json([
                 'status' => 'success',

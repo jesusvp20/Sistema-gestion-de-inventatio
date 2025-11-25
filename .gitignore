@@ -41,3 +41,16 @@ database/database.sqlite
 
 # Frontend (ignorar hasta que esté desarrollado)
 inventarioFrontend/
+
+# Archivos de documentación de cambios (excepto README.md)
+*.md
+!README.md
+!inventarioBackend/README.md
+
+# Archivos de storage que no deben estar en git
+inventarioBackend/storage/framework/views/*
+!inventarioBackend/storage/framework/views/.gitkeep
+inventarioBackend/storage/framework/sessions/*
+!inventarioBackend/storage/framework/sessions/.gitkeep
+inventarioBackend/storage/api-docs/api-docs-backup-*.json
+inventarioBackend/debug-*.php

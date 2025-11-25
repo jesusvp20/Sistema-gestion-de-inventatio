@@ -42,6 +42,13 @@ class ProductosModel extends Model
         'cantidad_disponible' => 'integer',
     ];
 
+    /**
+     * MODIFICADO: 2025-11-19
+     * Cambio: Eliminado serializeDate para evitar conflictos con operaciones de BD
+     * Razón: El formateo se hace manualmente en el controlador después de obtener los datos
+     * Nota: Esto permite que las operaciones de BD (orderBy, whereDate, etc.) funcionen correctamente
+     */
+
     // Relaciones
     public function proveedor()
     {

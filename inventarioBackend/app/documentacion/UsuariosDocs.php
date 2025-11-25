@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\documentacion;
 
 use OpenApi\Attributes as OA;
 
@@ -44,7 +44,6 @@ class UsuariosDocs
         tags: ["Autenticación", "Usuarios"],
         summary: "Usuario autenticado actual",
         description: "Obtiene la información del usuario actualmente autenticado. Requiere token Bearer.",
-        security: [["bearerAuth" => []]]
     )]
     #[OA\Response(response: 200, description: "Usuario autenticado obtenido exitosamente")]
     #[OA\Response(response: 401, description: "No autenticado o token inválido")]
@@ -56,7 +55,6 @@ class UsuariosDocs
         tags: ["Autenticación"],
         summary: "Cerrar sesión",
         description: "Revoca todos los tokens de acceso del usuario autenticado. Requiere token Bearer.",
-        security: [["bearerAuth" => []]]
     )]
     #[OA\Response(response: 200, description: "Sesión cerrada exitosamente")]
     #[OA\Response(response: 401, description: "No autenticado")]
@@ -69,7 +67,6 @@ class UsuariosDocs
         tags: ["Usuarios"],
         summary: "Listar usuarios",
         description: "Obtiene la lista de todos los usuarios del sistema. Requiere autenticación.",
-        security: [["bearerAuth" => []]]
     )]
     #[OA\Response(response: 200, description: "Lista de usuarios obtenida exitosamente")]
     #[OA\Response(response: 401, description: "No autenticado")]
@@ -81,7 +78,6 @@ class UsuariosDocs
         tags: ["Usuarios"],
         summary: "Crear usuario",
         description: "Crea un nuevo usuario en el sistema. Requiere autenticación.",
-        security: [["bearerAuth" => []]],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
             new OA\Property(property: "nombre", type: "string", example: "Juan Pérez"),
             new OA\Property(property: "correo", type: "string", format: "email", example: "juan@ejemplo.com"),
@@ -99,7 +95,6 @@ class UsuariosDocs
         tags: ["Usuarios"],
         summary: "Mostrar usuario",
         description: "Obtiene la información de un usuario específico. Requiere autenticación.",
-        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ]
@@ -114,7 +109,6 @@ class UsuariosDocs
         tags: ["Usuarios"],
         summary: "Actualizar usuario",
         description: "Actualiza la información de un usuario existente. Requiere autenticación.",
-        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
@@ -135,7 +129,6 @@ class UsuariosDocs
         tags: ["Usuarios"],
         summary: "Eliminar usuario",
         description: "Elimina un usuario del sistema. Requiere autenticación.",
-        security: [["bearerAuth" => []]],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ]

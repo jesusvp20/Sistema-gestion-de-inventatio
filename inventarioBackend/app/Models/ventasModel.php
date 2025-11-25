@@ -34,6 +34,13 @@ class ventasModel extends Model
         'total' => 'decimal:2',
     ];
 
+    /**
+     * MODIFICADO: 2025-11-19
+     * Cambio: Eliminado serializeDate para evitar conflictos con operaciones de BD
+     * Razón: El formateo se hace manualmente en el controlador después de obtener los datos
+     * Nota: Esto permite que las operaciones de BD (orderBy, whereDate, etc.) funcionen correctamente
+     */
+
     public function cliente()
     {
         return $this->belongsTo(ClientesModel::class, 'id_cliente', 'id');

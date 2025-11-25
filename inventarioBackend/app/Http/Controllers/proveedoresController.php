@@ -10,13 +10,9 @@ use OpenApi\Attributes as OA;
 
 class proveedoresController extends Controller
 {
-    #[OA\Get(path: "/proveedores", tags: ["Proveedores"], summary: "Listar proveedores", description: "Obtiene todos los proveedores registrados")]
-    #[OA\Response(response: 200, description: "Lista de proveedores", content: new OA\JsonContent(properties: [
-        new OA\Property(property: "status", type: "string", example: "success"),
-        new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Proveedor"))
-    ]))]
-    #[OA\Response(response: 404, description: "No hay proveedores")]
-    #[OA\Response(response: 500, description: "Error del servidor")]
+    /**
+     * Listar todos los proveedores
+     */
     public function index()
     {
         try {

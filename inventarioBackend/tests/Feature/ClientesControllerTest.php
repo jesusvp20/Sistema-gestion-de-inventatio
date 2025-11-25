@@ -52,11 +52,64 @@ class ClientesControllerTest extends TestCase
     }
 
     /** @test */
+    public function puede_mostrar_un_cliente_por_id()
+    {
+        $cliente = ClientesModel::factory()->create([
+            'nombre' => 'Cliente Test',
+            'email' => 'test@example.com',
+            'identificacion' => '987654321',
+            'telefono' => '555-9876',
+            'estado' => true,
+        ]);
+
+        $response = $this->getJson("/api/clientes/{$cliente->id}");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'message' => 'Cliente obtenido exitosamente',
+            ])
+            ->assertJsonPath('data.id', $cliente->id)
+            ->assertJsonPath('data.nombre', 'Cliente Test')
+            ->assertJsonPath('data.email', 'test@example.com')
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => ['id', 'nombre', 'email', 'identificacion', 'telefono', 'estado'],
+                'statusCode'
+            ]);
+    }
+
+    /** @test */
+    public function retorna_404_cuando_cliente_no_existe()
+    {
+        $response = $this->getJson('/api/clientes/99999');
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'status' => 'error',
+            ])
+            ->assertJsonPath('statusCode', 404);
+    }
+
+    /** @test */
     public function puede_actualizar_un_cliente()
     {
-        $cliente = ClientesModel::factory()->create();
+        $cliente = ClientesModel::factory()->create([
+            'nombre' => 'Cliente Original',
+            'email' => 'original@example.com',
+            'identificacion' => '111111111',
+            'telefono' => '555-0000',
+            'estado' => true,
+        ]);
 
-        $updateData = ['nombre' => 'Nombre Actualizado'];
+        $updateData = [
+            'nombre' => 'Nombre Actualizado',
+            'email' => 'actualizado@example.com',
+            'identificacion' => '999999999',
+            'telefono' => '555-9999',
+            'estado' => false,
+        ];
 
         $response = $this->putJson("/api/clientes/{$cliente->id}", $updateData);
 
@@ -65,9 +118,54 @@ class ClientesControllerTest extends TestCase
                 'status' => 'success',
                 'message' => 'Cliente actualizado exitosamente',
             ])
-            ->assertJsonPath('data.nombre', 'Nombre Actualizado');
+            ->assertJsonPath('data.nombre', 'Nombre Actualizado')
+            ->assertJsonPath('data.email', 'actualizado@example.com')
+            ->assertJsonPath('data.identificacion', '999999999')
+            ->assertJsonPath('data.telefono', '555-9999')
+            ->assertJsonPath('data.estado', false);
 
-        $this->assertDatabaseHas('clientes', ['id' => $cliente->id, 'nombre' => 'Nombre Actualizado']);
+        $this->assertDatabaseHas('clientes', [
+            'id' => $cliente->id,
+            'nombre' => 'Nombre Actualizado',
+            'email' => 'actualizado@example.com',
+            'identificacion' => '999999999',
+            'telefono' => '555-9999',
+            'estado' => false,
+        ]);
+    }
+
+    /** @test */
+    public function puede_actualizar_solo_algunos_campos_del_cliente()
+    {
+        $cliente = ClientesModel::factory()->create([
+            'nombre' => 'Cliente Original',
+            'email' => 'original@example.com',
+            'identificacion' => '111111111',
+            'telefono' => '555-0000',
+            'estado' => true,
+        ]);
+
+        // Actualizar solo email y estado
+        $updateData = [
+            'email' => 'nuevoemail@example.com',
+            'estado' => false,
+        ];
+
+        $response = $this->putJson("/api/clientes/{$cliente->id}", $updateData);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.email', 'nuevoemail@example.com')
+            ->assertJsonPath('data.estado', false)
+            ->assertJsonPath('data.nombre', 'Cliente Original') // Debe mantener el nombre original
+            ->assertJsonPath('data.identificacion', '111111111'); // Debe mantener la identificación original
+
+        $this->assertDatabaseHas('clientes', [
+            'id' => $cliente->id,
+            'email' => 'nuevoemail@example.com',
+            'estado' => false,
+            'nombre' => 'Cliente Original',
+            'identificacion' => '111111111',
+        ]);
     }
 
     /** @test */
@@ -80,7 +178,12 @@ class ClientesControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'message' => 'El cliente se ha eliminado correctamente',
+            ])
+            ->assertJsonPath('statusCode', 200)
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'statusCode'
             ]);
 
         $this->assertDatabaseMissing('clientes', ['id' => $cliente->id]);
