@@ -59,7 +59,12 @@ if [ -d "app/documentacion" ] && [ ! -d "app/Documentacion" ]; then
     mv app/documentacion app/Documentacion || echo "Warning: No se pudo renombrar el directorio, continuando..."
 fi
 
-# Ejecutar package discovery (necesario para l5-swagger)
+# Limpiar cache antes de regenerar autoloader
+php artisan config:clear || true
+php artisan cache:clear || true
+
+# Regenerar autoloader de Composer (necesario después de renombrar archivos/directorios)
+composer dump-autoload --optimize --no-scripts || true
 composer dump-autoload --optimize || true
 
 # Generar clave de aplicación si no existe
@@ -67,6 +72,9 @@ php artisan key:generate --force
 
 # Ejecutar migraciones
 php artisan migrate --force
+
+# Limpiar cache de Swagger antes de regenerar
+rm -f storage/api-docs/api-docs.json storage/api-docs/api-docs.yaml || true
 
 # Generar documentación Swagger
 php artisan l5-swagger:generate || echo "Warning: No se pudo generar Swagger, continuando..."
