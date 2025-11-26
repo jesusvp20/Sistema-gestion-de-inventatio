@@ -29,7 +29,7 @@ class proveedorModel extends Model
 
     public function productos()
     {
-        return $this->hasMany(productosModel::class, 'proveedor', 'id');
+        return $this->hasMany(ProductosModel::class, 'proveedor', 'id');
     }
     
 }

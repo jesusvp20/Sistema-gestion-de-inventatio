@@ -45,14 +45,14 @@ return [
                  */
                 'annotations' => [
                     base_path('app/Http/Controllers/Controller.php'),
-                    base_path('app/documentacion/DocumentationSchemas.php'),
-                    base_path('app/documentacion/UsuariosDocs.php'),
-                    base_path('app/documentacion/ProductosDocs.php'),
-                    base_path('app/documentacion/ClientesDocs.php'),
-                    base_path('app/documentacion/ProveedoresDocs.php'),
-                    base_path('app/documentacion/VentasDocs.php'),
-                    base_path('app/documentacion/FacturasDocs.php'),
-                    // base_path('app/documentacion/DetalleFacturaDocs.php'), // MODIFICADO: 2025-11-24 - Comentado porque los endpoints ya no existen
+                    base_path('app/Documentacion/DocumentationSchemas.php'),
+                    base_path('app/Documentacion/UsuariosDocs.php'),
+                    base_path('app/Documentacion/ProductosDocs.php'),
+                    base_path('app/Documentacion/ClientesDocs.php'),
+                    base_path('app/Documentacion/ProveedoresDocs.php'),
+                    base_path('app/Documentacion/VentasDocs.php'),
+                    base_path('app/Documentacion/FacturasDocs.php'),
+                    // base_path('app/Documentacion/DetalleFacturaDocs.php'), // MODIFICADO: 2025-11-24 - Comentado porque los endpoints ya no existen
                 ],
                 
                 /*

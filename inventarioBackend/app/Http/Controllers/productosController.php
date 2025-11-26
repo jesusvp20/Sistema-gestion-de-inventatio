@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\productosModel;
+use App\Models\ProductosModel;
 use App\Services\ProductoService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -20,7 +20,7 @@ class productosController extends Controller
     public function index()
     {
         try {
-            $productos = productosModel::all();
+            $productos = ProductosModel::all();
             
             if ($productos->isEmpty()) {
                 return response()->json([
@@ -102,7 +102,7 @@ class productosController extends Controller
                 ], 400);
             }
 
-            $producto = productosModel::create($requestData);
+            $producto = ProductosModel::create($requestData);
             
             // MODIFICADO: 2025-11-19 - Formatear fechas
             $producto = $this->productoService->formatearFechasProducto($producto);
@@ -127,7 +127,7 @@ class productosController extends Controller
     public function show($id)
     {
         try {
-            $producto = productosModel::find($id);
+            $producto = ProductosModel::find($id);
             
             if (!$producto) {
                 return response()->json([
@@ -161,7 +161,7 @@ class productosController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $producto = productosModel::find($id);
+            $producto = ProductosModel::find($id);
             
             if (!$producto) {
                 return response()->json([
@@ -235,7 +235,7 @@ class productosController extends Controller
     public function destroy($id)
     {
         try {
-            $producto = productosModel::find($id);
+            $producto = ProductosModel::find($id);
             
             if (!$producto) {
                 return response()->json([
@@ -265,7 +265,7 @@ class productosController extends Controller
 
     public function cambiarEstado($id)
     {
-        $producto = productosModel::find($id);
+        $producto = ProductosModel::find($id);
         if (!$producto) {
             return response()->json(['status' => 'error', 'message' => 'Producto no encontrado'], 404);
         }
@@ -291,7 +291,7 @@ class productosController extends Controller
     public function buscar(Request $request)
     {
         $nombre = $request->input('nombre');
-        $productos = productosModel::where('nombre', 'like', "%{$nombre}%")->get();
+        $productos = ProductosModel::where('nombre', 'like', "%{$nombre}%")->get();
         
         // MODIFICADO: 2025-11-19 - Formatear fechas
         $productosArray = $productos->toArray();
@@ -303,7 +303,7 @@ class productosController extends Controller
     public function disponibles()
     {
         try {
-            $productos = productosModel::where('estado', 'disponible')->get();
+            $productos = ProductosModel::where('estado', 'disponible')->get();
             
             if ($productos->isEmpty()) {
                 return response()->json([
@@ -337,7 +337,7 @@ class productosController extends Controller
     public function ordenar(Request $request)
     {
         $orden = $request->input('orden', 'asc');
-        $productos = productosModel::orderBy('precio', $orden)->get();
+        $productos = ProductosModel::orderBy('precio', $orden)->get();
         
         // MODIFICADO: 2025-11-19 - Formatear fechas
         $productosArray = $productos->toArray();

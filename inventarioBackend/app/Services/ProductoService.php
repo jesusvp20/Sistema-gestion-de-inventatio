@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\productosModel;
+use App\Models\ProductosModel;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Service para lógica de negocio de productos
@@ -41,11 +40,6 @@ class ProductoService
                             // Verificar si el raw también está en formato d/m/Y
                             if (is_string($fechaCreacionRaw) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $fechaCreacionRaw)) {
                                 $producto->setAttribute('fecha_creacion', $fechaCreacionRaw);
-                            } else {
-                                $fechaParseada = $this->parsearFechaSegura($fechaCreacionRaw);
-                                if ($fechaParseada) {
-                                    $producto->setAttribute('fecha_creacion', $fechaParseada->format('d/m/Y'));
-                                }
                             }
                         }
                     }
@@ -59,11 +53,6 @@ class ProductoService
                             $producto->setAttribute('fecha_creacion', $fechaCreacionRaw);
                         } elseif ($fechaCreacionRaw instanceof Carbon) {
                             $producto->setAttribute('fecha_creacion', $fechaCreacionRaw->format('d/m/Y'));
-                        } else {
-                            $fechaParseada = $this->parsearFechaSegura($fechaCreacionRaw);
-                            if ($fechaParseada) {
-                                $producto->setAttribute('fecha_creacion', $fechaParseada->format('d/m/Y'));
-                            }
                         }
                     }
                 }
@@ -94,11 +83,6 @@ class ProductoService
                             // Verificar si el raw también está en formato d/m/Y
                             if (is_string($fechaActualizacionRaw) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $fechaActualizacionRaw)) {
                                 $producto->setAttribute('fecha_actualizacion', $fechaActualizacionRaw);
-                            } else {
-                                $fechaParseada = $this->parsearFechaSegura($fechaActualizacionRaw);
-                                if ($fechaParseada) {
-                                    $producto->setAttribute('fecha_actualizacion', $fechaParseada->format('d/m/Y'));
-                                }
                             }
                         }
                     }
@@ -112,11 +96,6 @@ class ProductoService
                             $producto->setAttribute('fecha_actualizacion', $fechaActualizacionRaw);
                         } elseif ($fechaActualizacionRaw instanceof Carbon) {
                             $producto->setAttribute('fecha_actualizacion', $fechaActualizacionRaw->format('d/m/Y'));
-                        } else {
-                            $fechaParseada = $this->parsearFechaSegura($fechaActualizacionRaw);
-                            if ($fechaParseada) {
-                                $producto->setAttribute('fecha_actualizacion', $fechaParseada->format('d/m/Y'));
-                            }
                         }
                     }
                 }
@@ -131,64 +110,5 @@ class ProductoService
         return $producto;
     }
 
-    /**
-     * Parsear fecha de forma segura, manejando múltiples formatos
-     * 
-     * MODIFICADO: 2025-11-20
-     * Cambio: Método helper para parsear fechas evitando errores con formato d/m/Y
-     * Razón: Carbon::parse() no puede parsear fechas en formato d/m/Y, necesitamos intentar múltiples formatos
-     */
-    private function parsearFechaSegura($valor)
-    {
-        // Si es null o vacío, retornar null
-        if (empty($valor)) {
-            return null;
-        }
-        
-        // Si ya es Carbon, retornarlo
-        if ($valor instanceof Carbon) {
-            return $valor;
-        }
-        
-        // Convertir a string si no lo es
-        $valorString = is_string($valor) ? $valor : (string) $valor;
-        
-        // Si ya está en formato d/m/Y, parsearlo con createFromFormat
-        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $valorString)) {
-            try {
-                return Carbon::createFromFormat('d/m/Y', $valorString);
-            } catch (\Exception $e) {
-                Log::warning('ProductoService::parsearFechaSegura - error al parsear formato d/m/Y', [
-                    'valor' => $valorString,
-                    'exception' => $e->getMessage(),
-                ]);
-            }
-        }
-        
-        // Si está en formato ISO (YYYY-MM-DD), parsearlo
-        if (preg_match('/^\d{4}-\d{2}-\d{2}/', $valorString)) {
-            try {
-                return Carbon::parse($valorString);
-            } catch (\Exception $e) {
-                Log::warning('ProductoService::parsearFechaSegura - error al parsear formato ISO', [
-                    'valor' => $valorString,
-                    'exception' => $e->getMessage(),
-                ]);
-            }
-        }
-        
-        // Intentar parsear con Carbon::parse() como último recurso
-        try {
-            return Carbon::parse($valorString);
-        } catch (\Exception $e) {
-            Log::warning('ProductoService::parsearFechaSegura - error al parsear fecha', [
-                'valor' => $valorString,
-                'tipo' => gettype($valor),
-                'exception' => $e->getMessage(),
-            ]);
-            // Si todo falla, retornar null
-            return null;
-        }
-    }
 }
 

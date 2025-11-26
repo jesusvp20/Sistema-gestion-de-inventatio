@@ -22,9 +22,9 @@ class usuariosController extends Controller
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "correo", type: "string", format: "email", example: "juan@ejemplo.com"),
+                    new OA\Property(property: "correo", type: "string", format: "email", example: "admin@sistema.com"),
                     new OA\Property(property: "nombre", type: "string", example: "Juan Pérez"),
-                    new OA\Property(property: "contraseña", type: "string", example: "password123"),
+                    new OA\Property(property: "contraseña", type: "string", format: "password", example: "Admin2024!"),
                     new OA\Property(property: "tipo", type: "string", enum: ["admin", "usuario", "vendedor"], example: "usuario")
                 ]
             )

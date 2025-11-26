@@ -52,6 +52,13 @@ VITE_APP_NAME="${APP_NAME:-Laravel}"
 EOF
 fi
 
+# Fix PSR-4 autoloading: Rename directory if it exists with wrong case
+# This fixes the case-sensitivity issue between Windows (case-insensitive) and Linux (case-sensitive)
+if [ -d "app/documentacion" ] && [ ! -d "app/Documentacion" ]; then
+    echo "Renombrando directorio app/documentacion a app/Documentacion para cumplir con PSR-4..."
+    mv app/documentacion app/Documentacion || echo "Warning: No se pudo renombrar el directorio, continuando..."
+fi
+
 # Ejecutar package discovery (necesario para l5-swagger)
 composer dump-autoload --optimize || true
 
@@ -67,7 +74,12 @@ php artisan l5-swagger:generate || echo "Warning: No se pudo generar Swagger, co
 # Cachear configuraciones
 php artisan config:cache
 php artisan route:cache
-php artisan view:cache
+# Cachear vistas solo si el directorio de vistas existe (evita error en sistemas sin vistas)
+if [ -d "resources/views" ]; then
+    php artisan view:cache || echo "Warning: No se pudo cachear vistas, continuando..."
+else
+    echo "Info: Directorio de vistas no encontrado, omitiendo cache de vistas"
+fi
 
 # Iniciar servidor usando la variable PORT de Render
 php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
